@@ -1,0 +1,25 @@
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Go
+bin/
+*.test
+*.out
+
+# Local env
+.env
+.env.*
+!.env.example
+

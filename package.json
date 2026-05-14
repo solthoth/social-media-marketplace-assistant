@@ -1,0 +1,20 @@
+{
+  "name": "social-media-marketplace-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "api:start": "go run ./services/api/cmd/api",
+    "api:test": "go test ./services/api/...",
+    "web:start": "npm --workspace apps/web start",
+    "web:build": "npm --workspace apps/web run build",
+    "test": "npm run api:test"
+  },
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11"
+  }
+}
+
