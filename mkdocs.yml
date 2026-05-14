@@ -1,0 +1,10 @@
+site_name: Social Media Marketplace Assistant
+docs_dir: docs
+nav:
+  - Home: index.md
+  - Project Context: context.md
+  - Product Vision: product-vision.md
+  - Architecture: architecture.md
+  - Development: development.md
+  - Platform Integrations: platform-integrations.md
+
