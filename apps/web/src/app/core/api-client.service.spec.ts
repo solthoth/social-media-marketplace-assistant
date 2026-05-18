@@ -61,7 +61,8 @@ describe('ApiClientService', () => {
           category: 'Clothing',
           size: 'M',
           condition: 'Good',
-          price_cents: 3200,
+          original_purchase_price_cents: 1800,
+          selling_price_cents: 3200,
           currency: 'USD',
           status: 'draft',
           notes: 'Steam before photos',
@@ -100,7 +101,8 @@ describe('ApiClientService', () => {
         category: 'Clothing',
         size: 'M',
         condition: 'Good',
-        price_cents: 3200,
+        original_purchase_price_cents: 1800,
+        selling_price_cents: 3200,
         currency: 'USD',
         notes: 'Steam before photos'
       })
@@ -117,7 +119,8 @@ describe('ApiClientService', () => {
       category: 'Clothing',
       size: 'M',
       condition: 'Good',
-      price_cents: 3200,
+      original_purchase_price_cents: 1800,
+      selling_price_cents: 3200,
       currency: 'USD',
       notes: 'Steam before photos'
     });
@@ -146,7 +149,8 @@ describe('ApiClientService', () => {
     client
       .updateItem('item-1', {
         title: 'Updated denim jacket',
-        price_cents: 3600,
+        original_purchase_price_cents: 1800,
+        selling_price_cents: 3600,
         currency: 'USD'
       })
       .subscribe((item) => {
@@ -157,7 +161,8 @@ describe('ApiClientService', () => {
     expect(request.request.method).toBe('PATCH');
     expect(request.request.body).toEqual({
       title: 'Updated denim jacket',
-      price_cents: 3600,
+      original_purchase_price_cents: 1800,
+      selling_price_cents: 3600,
       currency: 'USD'
     });
     request.flush(itemFixture({ title: 'Updated denim jacket' }));
@@ -174,7 +179,8 @@ function itemFixture(overrides: Record<string, unknown> = {}) {
     category: 'Clothing',
     size: 'M',
     condition: 'Good',
-    price_cents: 3200,
+    original_purchase_price_cents: 1800,
+    selling_price_cents: 3200,
     currency: 'USD',
     status: 'draft',
     notes: 'Steam before photos',

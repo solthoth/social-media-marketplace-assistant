@@ -106,18 +106,34 @@ import {
 
         <div class="price-row">
           <mat-form-field appearance="outline">
-            <mat-label>Price</mat-label>
+            <mat-label>Original purchase price</mat-label>
             <input
               matInput
-              data-testid="item-price"
+              data-testid="item-original-purchase-price"
               type="number"
               inputmode="decimal"
               min="0"
               step="0.01"
-              formControlName="price"
+              formControlName="originalPurchasePrice"
             />
-            <mat-error *ngIf="showPriceError()">
-              Price must be zero or greater.
+            <mat-error *ngIf="showOriginalPurchasePriceError()">
+              Original purchase price must be zero or greater.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Selling price</mat-label>
+            <input
+              matInput
+              data-testid="item-selling-price"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              step="0.01"
+              formControlName="sellingPrice"
+            />
+            <mat-error *ngIf="showSellingPriceError()">
+              Selling price must be zero or greater.
             </mat-error>
           </mat-form-field>
 
@@ -185,7 +201,8 @@ export class ItemFormPageComponent implements OnInit {
     category: [''],
     size: [''],
     condition: [''],
-    price: [0, Validators.min(0)],
+    originalPurchasePrice: [0, Validators.min(0)],
+    sellingPrice: [0, Validators.min(0)],
     currency: ['USD', [Validators.required, Validators.pattern(/[A-Za-z]{3}/)]],
     notes: ['']
   });
@@ -233,8 +250,13 @@ export class ItemFormPageComponent implements OnInit {
     return control.invalid && control.touched;
   }
 
-  protected showPriceError(): boolean {
-    const control = this.form.controls.price;
+  protected showOriginalPurchasePriceError(): boolean {
+    const control = this.form.controls.originalPurchasePrice;
+    return control.invalid && control.touched;
+  }
+
+  protected showSellingPriceError(): boolean {
+    const control = this.form.controls.sellingPrice;
     return control.invalid && control.touched;
   }
 
@@ -262,7 +284,10 @@ export class ItemFormPageComponent implements OnInit {
       category: value.category.trim(),
       size: value.size.trim(),
       condition: value.condition.trim(),
-      price_cents: Math.round(Number(value.price || 0) * 100),
+      original_purchase_price_cents: Math.round(
+        Number(value.originalPurchasePrice || 0) * 100
+      ),
+      selling_price_cents: Math.round(Number(value.sellingPrice || 0) * 100),
       currency: value.currency.trim().toUpperCase(),
       notes: value.notes.trim()
     };
@@ -275,7 +300,8 @@ export class ItemFormPageComponent implements OnInit {
       category: item.category,
       size: item.size,
       condition: item.condition,
-      price: item.price_cents / 100,
+      originalPurchasePrice: item.original_purchase_price_cents / 100,
+      sellingPrice: item.selling_price_cents / 100,
       currency: item.currency,
       notes: item.notes
     };

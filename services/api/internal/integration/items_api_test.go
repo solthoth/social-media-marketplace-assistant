@@ -48,7 +48,8 @@ func (s *ItemsAPISuite) TestItemLifecyclePersistsThroughAPI() {
 	create := s.request(http.MethodPost, "/items", bytes.NewBufferString(`{
 		"title": "Ceramic bowl",
 		"category": "Kitchen",
-		"price_cents": 1800
+		"original_purchase_price_cents": 700,
+		"selling_price_cents": 1800
 	}`))
 	s.Equal(http.StatusCreated, create.Code)
 
@@ -59,9 +60,15 @@ func (s *ItemsAPISuite) TestItemLifecyclePersistsThroughAPI() {
 
 	update := s.request(http.MethodPatch, "/items/"+id, bytes.NewBufferString(`{
 		"description": "Blue handmade bowl",
+		"selling_price_cents": 2200,
 		"status": "ready_to_list"
 	}`))
 	s.Equal(http.StatusOK, update.Code)
+
+	var updated map[string]any
+	s.Require().NoError(json.NewDecoder(update.Body).Decode(&updated))
+	s.Equal(float64(700), updated["original_purchase_price_cents"])
+	s.Equal(float64(2200), updated["selling_price_cents"])
 
 	deleteResponse := s.request(http.MethodDelete, "/items/"+id, nil)
 	s.Equal(http.StatusNoContent, deleteResponse.Code)

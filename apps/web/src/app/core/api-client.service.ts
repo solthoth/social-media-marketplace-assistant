@@ -22,7 +22,8 @@ export interface InventoryItem {
   category: string;
   size: string;
   condition: string;
-  price_cents: number;
+  original_purchase_price_cents: number;
+  selling_price_cents: number;
   currency: string;
   status: InventoryStatus;
   notes: string;
@@ -40,7 +41,8 @@ export interface SaveInventoryItemRequest {
   category: string;
   size: string;
   condition: string;
-  price_cents: number;
+  original_purchase_price_cents: number;
+  selling_price_cents: number;
   currency: string;
   notes: string;
 }

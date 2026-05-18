@@ -33,26 +33,28 @@ func NewService(repository Repository) Service {
 }
 
 type CreateItemInput struct {
-	Title       string
-	Description string
-	Category    string
-	Size        string
-	Condition   string
-	PriceCents  int64
-	Currency    string
-	Notes       string
+	Title                      string
+	Description                string
+	Category                   string
+	Size                       string
+	Condition                  string
+	OriginalPurchasePriceCents int64
+	SellingPriceCents          int64
+	Currency                   string
+	Notes                      string
 }
 
 type UpdateItemInput struct {
-	Title       *string
-	Description *string
-	Category    *string
-	Size        *string
-	Condition   *string
-	PriceCents  *int64
-	Currency    *string
-	Status      *domain.InventoryStatus
-	Notes       *string
+	Title                      *string
+	Description                *string
+	Category                   *string
+	Size                       *string
+	Condition                  *string
+	OriginalPurchasePriceCents *int64
+	SellingPriceCents          *int64
+	Currency                   *string
+	Status                     *domain.InventoryStatus
+	Notes                      *string
 }
 
 type ListItemsFilter struct {
@@ -66,14 +68,15 @@ func (s Service) CreateItem(ctx context.Context, input CreateItemInput) (domain.
 	}
 
 	item := domain.NewDraftItem(domain.NewItemInput{
-		Title:       input.Title,
-		Description: input.Description,
-		Category:    input.Category,
-		Size:        input.Size,
-		Condition:   input.Condition,
-		PriceCents:  input.PriceCents,
-		Currency:    currency,
-		Notes:       input.Notes,
+		Title:                      input.Title,
+		Description:                input.Description,
+		Category:                   input.Category,
+		Size:                       input.Size,
+		Condition:                  input.Condition,
+		OriginalPurchasePriceCents: input.OriginalPurchasePriceCents,
+		SellingPriceCents:          input.SellingPriceCents,
+		Currency:                   currency,
+		Notes:                      input.Notes,
 	})
 	item.ID = uuid.NewString()
 
@@ -119,11 +122,16 @@ func (s Service) UpdateItem(ctx context.Context, id string, input UpdateItemInpu
 	if input.Condition != nil {
 		item.Condition = strings.TrimSpace(*input.Condition)
 	}
-	if input.PriceCents != nil {
-		item.Price.AmountCents = *input.PriceCents
+	if input.OriginalPurchasePriceCents != nil {
+		item.OriginalPurchasePrice.AmountCents = *input.OriginalPurchasePriceCents
+	}
+	if input.SellingPriceCents != nil {
+		item.SellingPrice.AmountCents = *input.SellingPriceCents
 	}
 	if input.Currency != nil {
-		item.Price.Currency = strings.ToUpper(strings.TrimSpace(*input.Currency))
+		currency := strings.ToUpper(strings.TrimSpace(*input.Currency))
+		item.OriginalPurchasePrice.Currency = currency
+		item.SellingPrice.Currency = currency
 	}
 	if input.Status != nil {
 		item.Status = *input.Status
@@ -154,7 +162,10 @@ func validateItem(item domain.Item) error {
 	if !item.Status.IsValid() {
 		return ErrInvalidItem
 	}
-	if err := item.Price.Validate(); err != nil {
+	if err := item.OriginalPurchasePrice.Validate(); err != nil {
+		return ErrInvalidItem
+	}
+	if err := item.SellingPrice.Validate(); err != nil {
 		return ErrInvalidItem
 	}
 	return nil

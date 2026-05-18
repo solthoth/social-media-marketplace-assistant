@@ -34,6 +34,10 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	s.Contains(body.Paths, "/healthz")
 	s.Contains(body.Paths, "/items")
 	s.Contains(body.Paths, "/items/{id}")
+	itemResponse := body.Components.Schemas["ItemResponse"].(map[string]any)
+	properties := itemResponse["properties"].(map[string]any)
+	s.Contains(properties, "original_purchase_price_cents")
+	s.Contains(properties, "selling_price_cents")
 }
 
 func (s *SwaggerSuite) TestSwaggerUIIsServed() {

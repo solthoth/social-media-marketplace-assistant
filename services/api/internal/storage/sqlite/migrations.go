@@ -87,10 +87,25 @@ create table if not exists sales (
 );
 `,
 	},
+	{
+		Version: 2,
+		SQL: `
+alter table items add column original_purchase_price_cents integer not null default 0;
+alter table items add column selling_price_cents integer not null default 0;
+update items set selling_price_cents = price_cents where selling_price_cents = 0;
+`,
+	},
 }
 
 func ApplyMigrations(ctx context.Context, db *sql.DB) error {
 	for _, migration := range migrations {
+		applied, err := migrationApplied(ctx, db, migration.Version)
+		if err != nil {
+			return err
+		}
+		if applied {
+			continue
+		}
 		if _, err := db.ExecContext(ctx, migration.SQL); err != nil {
 			return err
 		}
@@ -103,4 +118,17 @@ func ApplyMigrations(ctx context.Context, db *sql.DB) error {
 		}
 	}
 	return nil
+}
+
+func migrationApplied(ctx context.Context, db *sql.DB, version int) (bool, error) {
+	var count int
+	err := db.QueryRowContext(
+		ctx,
+		"select count(*) from schema_migrations where version = ?",
+		version,
+	).Scan(&count)
+	if err != nil {
+		return false, nil
+	}
+	return count > 0, nil
 }

@@ -25,35 +25,45 @@ func (s *ServiceSuite) SetupTest() {
 
 func (s *ServiceSuite) TestCreateItemDefaultsToDraftAndUSD() {
 	item, err := s.service.CreateItem(context.Background(), CreateItemInput{
-		Title:      " Leather boots ",
-		Category:   "Shoes",
-		PriceCents: 4200,
+		Title:                      " Leather boots ",
+		Category:                   "Shoes",
+		OriginalPurchasePriceCents: 2400,
+		SellingPriceCents:          4200,
 	})
 
 	s.Require().NoError(err)
 	s.NotEmpty(item.ID)
 	s.Equal("Leather boots", item.Title)
 	s.Equal("Shoes", item.Category)
-	s.Equal(int64(4200), item.Price.AmountCents)
-	s.Equal("USD", item.Price.Currency)
+	s.Equal(int64(2400), item.OriginalPurchasePrice.AmountCents)
+	s.Equal(int64(4200), item.SellingPrice.AmountCents)
+	s.Equal("USD", item.SellingPrice.Currency)
 	s.Equal(domain.InventoryStatusDraft, item.Status)
 }
 
 func (s *ServiceSuite) TestCreateItemRequiresTitle() {
-	_, err := s.service.CreateItem(context.Background(), CreateItemInput{
-		PriceCents: 100,
-	})
+	_, err := s.service.CreateItem(context.Background(), CreateItemInput{})
 
 	s.ErrorIs(err, ErrInvalidItem)
 }
 
+func (s *ServiceSuite) TestCreateItemDefaultsPricesToZero() {
+	item, err := s.service.CreateItem(context.Background(), CreateItemInput{
+		Title: "No price draft",
+	})
+
+	s.Require().NoError(err)
+	s.Equal(int64(0), item.OriginalPurchasePrice.AmountCents)
+	s.Equal(int64(0), item.SellingPrice.AmountCents)
+}
+
 func (s *ServiceSuite) TestListGetUpdateAndArchiveItem() {
 	created, err := s.service.CreateItem(context.Background(), CreateItemInput{
-		Title:       "Bracelet",
-		Description: "Silver tone",
-		Category:    "Jewelry",
-		PriceCents:  1500,
-		Currency:    "USD",
+		Title:             "Bracelet",
+		Description:       "Silver tone",
+		Category:          "Jewelry",
+		SellingPriceCents: 1500,
+		Currency:          "USD",
 	})
 	s.Require().NoError(err)
 
@@ -66,13 +76,19 @@ func (s *ServiceSuite) TestListGetUpdateAndArchiveItem() {
 	s.Equal(created.ID, fetched.ID)
 
 	title := "Vintage bracelet"
+	originalPurchasePriceCents := int64(700)
+	sellingPriceCents := int64(1800)
 	status := domain.InventoryStatusReadyToList
 	updated, err := s.service.UpdateItem(context.Background(), created.ID, UpdateItemInput{
-		Title:  &title,
-		Status: &status,
+		Title:                      &title,
+		OriginalPurchasePriceCents: &originalPurchasePriceCents,
+		SellingPriceCents:          &sellingPriceCents,
+		Status:                     &status,
 	})
 	s.Require().NoError(err)
 	s.Equal("Vintage bracelet", updated.Title)
+	s.Equal(int64(700), updated.OriginalPurchasePrice.AmountCents)
+	s.Equal(int64(1800), updated.SellingPrice.AmountCents)
 	s.Equal(domain.InventoryStatusReadyToList, updated.Status)
 
 	archived, err := s.service.ArchiveItem(context.Background(), created.ID)

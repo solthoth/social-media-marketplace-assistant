@@ -31,17 +31,18 @@ type Money struct {
 }
 
 type Item struct {
-	ID          string
-	Title       string
-	Description string
-	Category    string
-	Size        string
-	Condition   string
-	Price       Money
-	Status      InventoryStatus
-	Notes       string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID                    string
+	Title                 string
+	Description           string
+	Category              string
+	Size                  string
+	Condition             string
+	OriginalPurchasePrice Money
+	SellingPrice          Money
+	Status                InventoryStatus
+	Notes                 string
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 type ItemPhoto struct {
@@ -96,14 +97,15 @@ type Sale struct {
 }
 
 type NewItemInput struct {
-	Title       string
-	Description string
-	Category    string
-	Size        string
-	Condition   string
-	PriceCents  int64
-	Currency    string
-	Notes       string
+	Title                      string
+	Description                string
+	Category                   string
+	Size                       string
+	Condition                  string
+	OriginalPurchasePriceCents int64
+	SellingPriceCents          int64
+	Currency                   string
+	Notes                      string
 }
 
 func NewDraftItem(input NewItemInput) Item {
@@ -114,8 +116,12 @@ func NewDraftItem(input NewItemInput) Item {
 		Category:    strings.TrimSpace(input.Category),
 		Size:        strings.TrimSpace(input.Size),
 		Condition:   strings.TrimSpace(input.Condition),
-		Price: Money{
-			AmountCents: input.PriceCents,
+		OriginalPurchasePrice: Money{
+			AmountCents: input.OriginalPurchasePriceCents,
+			Currency:    strings.ToUpper(strings.TrimSpace(input.Currency)),
+		},
+		SellingPrice: Money{
+			AmountCents: input.SellingPriceCents,
 			Currency:    strings.ToUpper(strings.TrimSpace(input.Currency)),
 		},
 		Status:    InventoryStatusDraft,

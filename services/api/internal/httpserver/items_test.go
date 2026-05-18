@@ -40,7 +40,8 @@ func (s *ItemsHandlerSuite) TestCreateListGetPatchAndArchiveItem() {
 		"category": "Clothing",
 		"size": "M",
 		"condition": "Good",
-		"price_cents": 3200,
+		"original_purchase_price_cents": 1800,
+		"selling_price_cents": 3200,
 		"currency": "USD",
 		"notes": "Steam before photos"
 	}`)
@@ -52,6 +53,8 @@ func (s *ItemsHandlerSuite) TestCreateListGetPatchAndArchiveItem() {
 	s.Require().NoError(json.NewDecoder(createResponse.Body).Decode(&created))
 	s.NotEmpty(created.ID)
 	s.Equal("Denim jacket", created.Title)
+	s.Equal(int64(1800), created.OriginalPurchasePriceCents)
+	s.Equal(int64(3200), created.SellingPriceCents)
 	s.Equal("draft", created.Status)
 
 	listResponse := s.request(http.MethodGet, "/items", nil)
@@ -67,13 +70,14 @@ func (s *ItemsHandlerSuite) TestCreateListGetPatchAndArchiveItem() {
 	patchResponse := s.request(
 		http.MethodPatch,
 		"/items/"+created.ID,
-		bytes.NewBufferString(`{"title":"Listed denim jacket","status":"ready_to_list"}`),
+		bytes.NewBufferString(`{"title":"Listed denim jacket","selling_price_cents":3600,"status":"ready_to_list"}`),
 	)
 	s.Equal(http.StatusOK, patchResponse.Code)
 
 	var updated itemResponse
 	s.Require().NoError(json.NewDecoder(patchResponse.Body).Decode(&updated))
 	s.Equal("Listed denim jacket", updated.Title)
+	s.Equal(int64(3600), updated.SellingPriceCents)
 	s.Equal("ready_to_list", updated.Status)
 
 	deleteResponse := s.request(http.MethodDelete, "/items/"+created.ID, nil)
