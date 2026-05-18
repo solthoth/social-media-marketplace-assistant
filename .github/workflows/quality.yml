@@ -7,8 +7,8 @@ on:
       - main
 
 jobs:
-  checks:
-    name: Checks
+  format:
+    name: Format And File Checks
     runs-on: ubuntu-latest
 
     steps:
@@ -16,12 +16,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.26.3
-          cache-dependency-path: services/api/go.mod
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -40,8 +34,87 @@ jobs:
       - name: Install pre-commit
         run: python -m pip install pre-commit
 
-      - name: Run pre-commit checks
-        run: pre-commit run --all-files --hook-stage pre-commit
+      - name: Run formatting and file checks
+        run: |
+          pre-commit run --all-files trailing-whitespace
+          pre-commit run --all-files end-of-file-fixer
+          pre-commit run --all-files check-json
+          pre-commit run --all-files check-yaml
+          pre-commit run --all-files prettier
+
+  api:
+    name: API Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.26.3
+          cache-dependency-path: services/api/go.mod
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Check Go formatting
+        run: npm run api:fmt:check
+
+      - name: Run Go vet
+        run: npm run api:vet
+
+      - name: Run API tests
+        run: npm run api:test
+
+  web:
+    name: Web Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run web:build
+
+      - name: Run web tests
+        run: npm run web:test
+
+  commitlint:
+    name: Commit Message Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
 
       - name: Lint commit messages
         if: github.event_name == 'pull_request'
