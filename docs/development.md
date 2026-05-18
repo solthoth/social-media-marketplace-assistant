@@ -41,6 +41,8 @@ The inventory page at `/items` loads item records from `GET /api/items`, support
 
 Use `/items/new` to capture a new draft item. Use `/items/{id}/edit` to edit an existing item from the inventory list. The form stores prices as decimal dollars in the UI and sends integer cents to the API.
 
+The frontend uses Angular Material components with the Rose/Red prebuilt theme. Prefer Material form fields, buttons, toolbar, and card components for new mobile-facing UI controls so spacing, touch targets, and validation states stay consistent.
+
 ## Docker Compose
 
 Build and run the web and API containers:

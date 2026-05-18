@@ -1,6 +1,9 @@
 import { NgIf } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   ApiClientService,
@@ -11,7 +14,14 @@ import {
 @Component({
   selector: 'smm-item-form-page',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, RouterLink],
+  imports: [
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterLink
+  ],
   template: `
     <section class="item-form-page">
       <div class="form-header">
@@ -22,7 +32,9 @@ import {
             Capture the details needed to keep this item ready for listing.
           </p>
         </div>
-        <a class="secondary-action" routerLink="/items">Back to items</a>
+        <a matButton="outlined" class="secondary-action" routerLink="/items">
+          Back to items
+        </a>
       </div>
 
       <p *ngIf="loadError()" class="notice error" role="alert">
@@ -35,66 +47,68 @@ import {
         (ngSubmit)="saveDraft()"
         novalidate
       >
-        <label class="full-width">
-          <span>Title</span>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
           <input
+            matInput
             data-testid="item-title"
             type="text"
             formControlName="title"
             autocomplete="off"
           />
-          <small
-            *ngIf="showTitleError()"
-            class="field-error"
-            data-testid="title-error"
-          >
+          <mat-error *ngIf="showTitleError()" data-testid="title-error">
             Title is required.
-          </small>
-        </label>
+          </mat-error>
+        </mat-form-field>
 
-        <label class="full-width">
-          <span>Description</span>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
           <textarea
+            matInput
             data-testid="item-description"
             formControlName="description"
             rows="4"
           ></textarea>
-        </label>
+        </mat-form-field>
 
-        <label>
-          <span>Category</span>
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
           <input
+            matInput
             data-testid="item-category"
             type="text"
             formControlName="category"
             autocomplete="off"
           />
-        </label>
+        </mat-form-field>
 
-        <label>
-          <span>Size</span>
+        <mat-form-field appearance="outline">
+          <mat-label>Size</mat-label>
           <input
+            matInput
             data-testid="item-size"
             type="text"
             formControlName="size"
             autocomplete="off"
           />
-        </label>
+        </mat-form-field>
 
-        <label>
-          <span>Condition</span>
+        <mat-form-field appearance="outline">
+          <mat-label>Condition</mat-label>
           <input
+            matInput
             data-testid="item-condition"
             type="text"
             formControlName="condition"
             autocomplete="off"
           />
-        </label>
+        </mat-form-field>
 
         <div class="price-row">
-          <label>
-            <span>Price</span>
+          <mat-form-field appearance="outline">
+            <mat-label>Price</mat-label>
             <input
+              matInput
               data-testid="item-price"
               type="number"
               inputmode="decimal"
@@ -102,31 +116,33 @@ import {
               step="0.01"
               formControlName="price"
             />
-            <small *ngIf="showPriceError()" class="field-error">
+            <mat-error *ngIf="showPriceError()">
               Price must be zero or greater.
-            </small>
-          </label>
+            </mat-error>
+          </mat-form-field>
 
-          <label>
-            <span>Currency</span>
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
             <input
+              matInput
               data-testid="item-currency"
               type="text"
               maxlength="3"
               formControlName="currency"
               autocomplete="off"
             />
-          </label>
+          </mat-form-field>
         </div>
 
-        <label class="full-width">
-          <span>Notes</span>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notes</mat-label>
           <textarea
+            matInput
             data-testid="item-notes"
             formControlName="notes"
             rows="3"
           ></textarea>
-        </label>
+        </mat-form-field>
 
         <p *ngIf="saveError()" class="notice error" role="alert">
           Item could not be saved.
@@ -134,6 +150,7 @@ import {
 
         <div class="form-actions">
           <button
+            matButton="filled"
             data-testid="save-draft"
             class="primary-action button-action"
             type="submit"
@@ -141,7 +158,9 @@ import {
           >
             {{ isSaving() ? 'Saving...' : 'Save draft' }}
           </button>
-          <a class="secondary-action" routerLink="/items">Cancel</a>
+          <a matButton="outlined" class="secondary-action" routerLink="/items">
+            Cancel
+          </a>
         </div>
       </form>
     </section>

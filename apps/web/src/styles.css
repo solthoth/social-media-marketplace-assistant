@@ -1,3 +1,5 @@
+@import '@angular/material/prebuilt-themes/rose-red.css';
+
 :root {
   color-scheme: light;
   font-family:
@@ -36,25 +38,25 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 16px;
+  min-height: auto;
+  padding: 0 0 16px;
   border-bottom: 1px solid #d7dee2;
+  background: transparent;
+  color: #172026;
 }
 
 .brand {
-  color: #172026;
   font-weight: 800;
-  text-decoration: none;
 }
 
 nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
 }
 
 nav a {
-  color: #2f6f73;
   font-weight: 700;
-  text-decoration: none;
 }
 
 .page-section {
@@ -93,24 +95,9 @@ nav a {
   align-items: end;
 }
 
-.inventory-toolbar label {
-  display: grid;
-  gap: 7px;
-  color: #52616b;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.inventory-toolbar input,
-.inventory-toolbar select {
+.inventory-toolbar mat-form-field,
+.item-form mat-form-field {
   width: 100%;
-  min-height: 42px;
-  padding: 9px 11px;
-  border: 1px solid #bcc8ce;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #172026;
-  font: inherit;
 }
 
 .notice,
@@ -139,8 +126,6 @@ nav a {
   display: grid;
   gap: 14px;
   align-content: start;
-  padding: 16px;
-  border: 1px solid #d7dee2;
   border-radius: 8px;
   background: #ffffff;
 }
@@ -150,9 +135,10 @@ nav a {
   justify-content: space-between;
   gap: 12px;
   align-items: start;
+  padding: 16px 16px 0;
 }
 
-.card-heading h2,
+.card-heading mat-card-title,
 .empty-state h2 {
   margin: 0;
   color: #172026;
@@ -168,6 +154,11 @@ nav a {
   color: #2f6f73;
   font-size: 0.78rem;
   font-weight: 800;
+}
+
+.inventory-card mat-card-content {
+  display: grid;
+  gap: 14px;
 }
 
 .item-facts {
@@ -219,15 +210,11 @@ nav a {
 }
 
 .primary-action {
-  border: 1px solid #2f6f73;
-  background: #2f6f73;
-  color: #ffffff;
+  --mat-button-filled-container-shape: 8px;
 }
 
 .secondary-action {
-  border: 1px solid #bcc8ce;
-  background: #ffffff;
-  color: #2f6f73;
+  --mat-button-outlined-container-shape: 8px;
 }
 
 .button-action {
@@ -257,27 +244,6 @@ nav a {
   gap: 16px;
 }
 
-.item-form label {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
-  color: #52616b;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.item-form input,
-.item-form textarea {
-  width: 100%;
-  min-height: 44px;
-  padding: 10px 11px;
-  border: 1px solid #bcc8ce;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #172026;
-  font: inherit;
-}
-
 .item-form textarea {
   resize: vertical;
 }
@@ -293,12 +259,6 @@ nav a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(96px, 140px);
   gap: 16px;
-}
-
-.field-error {
-  color: #8a2d21;
-  font-size: 0.82rem;
-  line-height: 1.4;
 }
 
 .form-actions {
@@ -363,6 +323,15 @@ strong {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+    gap: 12px;
+    padding-bottom: 14px;
+    white-space: normal;
+  }
+
+  nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .inventory-header {

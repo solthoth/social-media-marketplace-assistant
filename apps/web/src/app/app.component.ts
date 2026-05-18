@@ -1,20 +1,22 @@
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'smm-root',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [MatButtonModule, MatToolbarModule, RouterLink, RouterOutlet],
   template: `
     <main class="app-shell">
-      <header class="topbar">
-        <a class="brand" routerLink="/">Marketplace Assistant</a>
+      <mat-toolbar class="topbar">
+        <a class="brand" matButton routerLink="/">Marketplace Assistant</a>
         <nav aria-label="Primary navigation">
-          <a routerLink="/">Dashboard</a>
-          <a routerLink="/items">Items</a>
-          <a routerLink="/items/new">New item</a>
+          <a matButton routerLink="/">Dashboard</a>
+          <a matButton routerLink="/items">Items</a>
+          <a matButton="filled" routerLink="/items/new">New item</a>
         </nav>
-      </header>
+      </mat-toolbar>
 
       <router-outlet />
 

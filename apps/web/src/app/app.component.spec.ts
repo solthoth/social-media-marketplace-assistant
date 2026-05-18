@@ -12,8 +12,10 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
 
     expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('mat-toolbar')).toBeTruthy();
   });
 
   it('shows primary navigation for creating inventory items', async () => {

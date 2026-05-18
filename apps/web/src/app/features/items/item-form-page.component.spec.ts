@@ -20,6 +20,9 @@ describe('ItemFormPageComponent', () => {
     clickSave(fixture);
 
     expect(fixture.nativeElement.textContent).toContain('Title is required');
+    expect(
+      fixture.nativeElement.querySelectorAll('mat-form-field').length
+    ).toBe(8);
     http.expectNone('/api/items');
     http.verify();
   });

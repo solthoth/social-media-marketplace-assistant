@@ -52,6 +52,7 @@ describe('InventoryPageComponent', () => {
     expect(text).toContain('Leather boots');
     expect(text).toContain('$32.00');
     expect(text).toContain('2 items');
+    expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(2);
     expect(
       fixture.nativeElement.querySelector('a[href="/items/new"]')
     ).toBeTruthy();

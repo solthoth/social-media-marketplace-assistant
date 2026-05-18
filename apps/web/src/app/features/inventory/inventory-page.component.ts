@@ -1,5 +1,10 @@
 import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import {
   ApiClientService,
@@ -20,7 +25,18 @@ const statusLabels: Record<InventoryStatus, string> = {
 @Component({
   selector: 'smm-inventory-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, NgFor, NgIf, RouterLink],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    NgFor,
+    NgIf,
+    RouterLink
+  ],
   template: `
     <section class="inventory-page">
       <div class="inventory-header">
@@ -36,24 +52,28 @@ const statusLabels: Record<InventoryStatus, string> = {
           {{ filteredItems().length }}
           {{ filteredItems().length === 1 ? 'item' : 'items' }}
         </div>
-        <a class="primary-action" routerLink="/items/new">New item</a>
+        <a matButton="filled" class="primary-action" routerLink="/items/new">
+          New item
+        </a>
       </div>
 
       <div class="inventory-toolbar" aria-label="Inventory filters">
-        <label>
-          <span>Search</span>
+        <mat-form-field appearance="outline">
+          <mat-label>Search</mat-label>
           <input
+            matInput
             data-testid="inventory-search"
             type="search"
             [value]="searchTerm()"
             (input)="setSearch($event)"
             placeholder="Title, category, or notes"
           />
-        </label>
+        </mat-form-field>
 
-        <label>
-          <span>Status</span>
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
           <select
+            matNativeControl
             data-testid="status-filter"
             [value]="statusFilter()"
             (change)="setStatus($event)"
@@ -65,7 +85,7 @@ const statusLabels: Record<InventoryStatus, string> = {
             <option value="sold">Sold</option>
             <option value="archived">Archived</option>
           </select>
-        </label>
+        </mat-form-field>
       </div>
 
       <p *ngIf="loadError()" class="notice error" role="alert">
@@ -79,42 +99,52 @@ const statusLabels: Record<InventoryStatus, string> = {
         class="inventory-grid"
         aria-label="Inventory items"
       >
-        <article *ngFor="let item of filteredItems()" class="inventory-card">
-          <div class="card-heading">
-            <h2>{{ item.title }}</h2>
+        <mat-card
+          *ngFor="let item of filteredItems()"
+          appearance="outlined"
+          class="inventory-card"
+        >
+          <mat-card-header class="card-heading">
+            <mat-card-title>{{ item.title }}</mat-card-title>
             <span class="status-badge">{{ statusLabel(item.status) }}</span>
-          </div>
+          </mat-card-header>
 
-          <dl class="item-facts">
-            <div>
-              <dt>Category</dt>
-              <dd>{{ item.category || 'Uncategorized' }}</dd>
-            </div>
-            <div>
-              <dt>Price</dt>
-              <dd>{{ item.price_cents / 100 | currency: item.currency }}</dd>
-            </div>
-            <div>
-              <dt>Size</dt>
-              <dd>{{ item.size || 'Not set' }}</dd>
-            </div>
-            <div>
-              <dt>Updated</dt>
-              <dd>{{ item.updated_at | date: 'mediumDate' }}</dd>
-            </div>
-          </dl>
+          <mat-card-content>
+            <dl class="item-facts">
+              <div>
+                <dt>Category</dt>
+                <dd>{{ item.category || 'Uncategorized' }}</dd>
+              </div>
+              <div>
+                <dt>Price</dt>
+                <dd>{{ item.price_cents / 100 | currency: item.currency }}</dd>
+              </div>
+              <div>
+                <dt>Size</dt>
+                <dd>{{ item.size || 'Not set' }}</dd>
+              </div>
+              <div>
+                <dt>Updated</dt>
+                <dd>{{ item.updated_at | date: 'mediumDate' }}</dd>
+              </div>
+            </dl>
 
-          <p class="item-description" *ngIf="item.description">
-            {{ item.description }}
-          </p>
-          <p class="item-notes" *ngIf="item.notes">{{ item.notes }}</p>
-          <a
-            class="secondary-action"
-            [routerLink]="['/items', item.id, 'edit']"
-          >
-            Edit
-          </a>
-        </article>
+            <p class="item-description" *ngIf="item.description">
+              {{ item.description }}
+            </p>
+            <p class="item-notes" *ngIf="item.notes">{{ item.notes }}</p>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <a
+              matButton="outlined"
+              class="secondary-action"
+              [routerLink]="['/items', item.id, 'edit']"
+            >
+              Edit
+            </a>
+          </mat-card-actions>
+        </mat-card>
       </section>
 
       <section
