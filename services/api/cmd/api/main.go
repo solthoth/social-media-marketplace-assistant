@@ -12,6 +12,7 @@ import (
 
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/config"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/httpserver"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/items"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/storage/sqlite"
 )
 
@@ -27,10 +28,12 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+	itemRepository := sqlite.NewItemRepository(db)
+	itemService := items.NewService(itemRepository)
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           httpserver.NewRouter(),
+		Handler:           httpserver.NewRouter(httpserver.RouterDependencies{ItemService: &itemService}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "api:fmt:check": "test -z \"$(gofmt -l services/api)\"",
+    "api:integration:test": "go test -tags=integration ./services/api/internal/integration",
     "api:start": "go run ./services/api/cmd/api",
     "api:test": "go test ./services/api/...",
     "api:vet": "go vet ./services/api/...",
@@ -16,7 +17,7 @@
     "web:build": "npm --workspace apps/web run build",
     "web:test": "npm --workspace apps/web run test",
     "test": "npm run api:test && npm run web:test",
-    "verify": "npm run format:check && npm run api:fmt:check && npm run api:vet && npm run web:build && npm test"
+    "verify": "npm run format:check && npm run api:fmt:check && npm run api:vet && npm run web:build && npm test && npm run api:integration:test"
   },
   "engines": {
     "node": ">=24",

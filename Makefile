@@ -1,4 +1,4 @@
-.PHONY: install-web run-web build-web test-web run-api fmt-check vet-api test-api test verify
+.PHONY: install-web run-web build-web test-web run-api fmt-check vet-api test-api test-api-integration test verify
 
 install-web:
 	npm install
@@ -24,7 +24,10 @@ vet-api:
 test-api:
 	go test ./services/api/...
 
-test: test-api test-web
+test-api-integration:
+	go test -tags=integration ./services/api/internal/integration
+
+test: test-api test-web test-api-integration
 
 verify:
 	npm run verify

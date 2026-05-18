@@ -29,6 +29,11 @@ repos:
         entry: npm run api:test
         language: system
         pass_filenames: false
+      - id: api-integration-tests
+        name: api integration tests
+        entry: npm run api:integration:test
+        language: system
+        pass_filenames: false
       - id: web-build
         name: web build
         entry: npm run web:build
