@@ -39,6 +39,16 @@ The frontend calls API routes through the `/api` path. The Angular development s
 
 The inventory page at `/items` loads item records from `GET /api/items`, supports status filtering, and filters the loaded result set by title, category, or notes.
 
+## Docker Compose
+
+Build and run the web and API containers:
+
+```sh
+docker compose up --build
+```
+
+The web app is available at `http://localhost:4200`, and the API is available at `http://localhost:8080`. The web container proxies `/api` requests to the API container.
+
 ## Git Hooks
 
 Install `pre-commit`:
