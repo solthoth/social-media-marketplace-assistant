@@ -40,7 +40,7 @@ test('renders inventory items returned by the backend', async ({
   await expect(page.getByRole('heading', { name: 'Items' })).toBeVisible();
   await expect(page.getByText(title)).toBeVisible();
   await expect(
-    page.locator('article').filter({ hasText: title }).getByText('$32.00')
+    page.locator('mat-card').filter({ hasText: title }).getByText('$32.00')
   ).toBeVisible();
 });
 
@@ -84,7 +84,7 @@ test('creates a draft item from the item form', async ({ page }) => {
   await expect(page).toHaveURL(/\/items$/);
   await expect(page.getByText(title)).toBeVisible();
   await expect(
-    page.locator('article').filter({ hasText: title }).getByText('$18.50')
+    page.locator('mat-card').filter({ hasText: title }).getByText('$18.50')
   ).toBeVisible();
 });
 
@@ -129,7 +129,7 @@ test('edits an existing item from the inventory list', async ({
 
   await page.goto('/items');
   await page
-    .locator('article')
+    .locator('mat-card')
     .filter({ hasText: title })
     .getByRole('link', { name: 'Edit' })
     .click();
@@ -145,7 +145,7 @@ test('edits an existing item from the inventory list', async ({
   await expect(page.getByText(updatedTitle)).toBeVisible();
   await expect(
     page
-      .locator('article')
+      .locator('mat-card')
       .filter({ hasText: updatedTitle })
       .getByText('$72.00')
   ).toBeVisible();
