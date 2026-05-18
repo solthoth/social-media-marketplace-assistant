@@ -1,0 +1,11 @@
+.git
+.gitignore
+.angular
+apps/web/dist
+apps/web/.angular
+coverage
+node_modules
+**/node_modules
+services/api/data
+tmp
+*.log
