@@ -6,15 +6,25 @@
     "apps/web"
   ],
   "scripts": {
+    "api:fmt:check": "test -z \"$(gofmt -l services/api)\"",
     "api:start": "go run ./services/api/cmd/api",
     "api:test": "go test ./services/api/...",
+    "api:vet": "go vet ./services/api/...",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "web:start": "npm --workspace apps/web start",
     "web:build": "npm --workspace apps/web run build",
-    "test": "npm run api:test"
+    "web:test": "npm --workspace apps/web run test",
+    "test": "npm run api:test && npm run web:test",
+    "verify": "npm run format:check && npm run api:fmt:check && npm run api:vet && npm run web:build && npm test"
   },
   "engines": {
     "node": ">=24",
     "npm": ">=11"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "prettier": "^3.7.4"
   }
 }
-

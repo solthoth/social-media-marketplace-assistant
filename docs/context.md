@@ -45,4 +45,3 @@ The project is not intended for malicious automation, spam, account evasion, or 
 ## Assistant Guidance
 
 Future assistant sessions should read this file first, then inspect the current repository state before making changes. Preserve the platform-compliant automation boundary when designing features or integrations.
-

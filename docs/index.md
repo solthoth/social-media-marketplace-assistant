@@ -9,4 +9,3 @@ This documentation describes the private inventory and listing assistant.
 - [Architecture](architecture.md)
 - [Development](development.md)
 - [Platform integrations](platform-integrations.md)
-

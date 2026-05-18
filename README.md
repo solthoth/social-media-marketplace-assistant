@@ -29,8 +29,19 @@ This project should use official platform integrations where available and keep 
 - Go 1.26+
 - Node.js 24+
 - npm 11+
+- Python 3 with `pre-commit`
 
-The Angular app is scaffolded without committed dependencies. Run `npm install` before using web commands.
+Install `pre-commit` with either:
+
+```sh
+pipx install pre-commit
+```
+
+or:
+
+```sh
+python -m pip install pre-commit
+```
 
 ## Getting Started
 
@@ -38,6 +49,12 @@ Install frontend dependencies:
 
 ```sh
 npm install
+```
+
+Install local Git hooks:
+
+```sh
+pre-commit install --hook-type pre-commit --hook-type commit-msg
 ```
 
 Run the backend API:
@@ -65,14 +82,22 @@ The Angular development server listens on `http://localhost:4200` by default.
 ## Useful Commands
 
 ```sh
+make verify         # Run the same core checks as CI
+make test           # Run backend and frontend tests
 make test-api       # Run Go tests
+make test-web       # Run Angular tests
 make run-api        # Start the Go API
 make install-web    # Install npm workspace dependencies
 make run-web        # Start Angular dev server
 make build-web      # Build Angular app
 ```
 
+The equivalent npm command for CI-style local verification is:
+
+```sh
+npm run verify
+```
+
 ## Documentation
 
 Start with [docs/context.md](docs/context.md) for the durable project context that future assistant sessions should read first.
-

@@ -51,4 +51,3 @@ Likely core entities:
 - Listing
 - ListingAttempt
 - Sale
-

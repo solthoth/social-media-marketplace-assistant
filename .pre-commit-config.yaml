@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: bash -c 'if [ "$CI" = "true" ]; then npm run format:check; else npm run format; fi'
+        language: system
+        pass_filenames: false
+      - id: gofmt-check
+        name: gofmt check
+        entry: npm run api:fmt:check
+        language: system
+        pass_filenames: false
+      - id: go-vet
+        name: go vet
+        entry: npm run api:vet
+        language: system
+        pass_filenames: false
+      - id: api-tests
+        name: api tests
+        entry: npm run api:test
+        language: system
+        pass_filenames: false
+      - id: web-build
+        name: web build
+        entry: npm run web:build
+        language: system
+        pass_filenames: false
+      - id: web-tests
+        name: web tests
+        entry: npm run web:test
+        language: system
+        pass_filenames: false
+      - id: commitlint
+        name: commitlint
+        entry: npx --no -- commitlint --edit
+        language: system
+        stages:
+          - commit-msg
