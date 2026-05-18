@@ -9,6 +9,10 @@ test('loads the app shell', async ({ page }) => {
     page.getByRole('heading', { name: 'Marketplace Assistant' })
   ).toBeVisible();
   await expect(page.getByRole('link', { name: 'Items' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'New item' })).toHaveAttribute(
+    'href',
+    '/items/new'
+  );
 });
 
 test('renders inventory items returned by the backend', async ({
@@ -84,8 +88,18 @@ test('creates a draft item from the item form', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('opens the item form from primary navigation', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'New item' }).click();
+
+  await expect(page).toHaveURL(/\/items\/new$/);
+  await expect(page.getByRole('heading', { name: 'New item' })).toBeVisible();
+});
+
 test('requires a title when saving the item form', async ({ page }) => {
   await page.goto('/items/new');
+
+  await expect(page.getByRole('heading', { name: 'New item' })).toBeVisible();
   await page.getByTestId('save-draft').click();
 
   await expect(page.getByText('Title is required')).toBeVisible();
@@ -119,6 +133,9 @@ test('edits an existing item from the inventory list', async ({
     .filter({ hasText: title })
     .getByRole('link', { name: 'Edit' })
     .click();
+
+  await expect(page.getByRole('heading', { name: 'Edit item' })).toBeVisible();
+  await expect(page.getByTestId('item-title')).toHaveValue(title);
 
   await page.getByTestId('item-title').fill(updatedTitle);
   await page.getByTestId('item-price').fill('72');

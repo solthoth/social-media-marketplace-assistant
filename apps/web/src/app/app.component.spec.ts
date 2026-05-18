@@ -15,4 +15,23 @@ describe('AppComponent', () => {
 
     expect(fixture.componentInstance).toBeTruthy();
   });
+
+  it('shows primary navigation for creating inventory items', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [provideRouter(routes)]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const links = Array.from<HTMLAnchorElement>(
+      fixture.nativeElement.querySelectorAll('nav a')
+    ).map((link) => ({
+      text: link.textContent.trim(),
+      href: link.getAttribute('href')
+    }));
+
+    expect(links).toContainEqual({ text: 'New item', href: '/items/new' });
+  });
 });
