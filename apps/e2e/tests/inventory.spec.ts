@@ -38,6 +38,7 @@ test('renders inventory items returned by the backend', async ({
   await page.goto('/items');
 
   await expect(page.getByRole('heading', { name: 'Items' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'New item' })).toHaveCount(1);
   await expect(page.getByText(title)).toBeVisible();
   await expect(
     page.locator('mat-card').filter({ hasText: title }).getByText('$32.00')

@@ -55,7 +55,7 @@ describe('InventoryPageComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(2);
     expect(
       fixture.nativeElement.querySelector('a[href="/items/new"]')
-    ).toBeTruthy();
+    ).toBeFalsy();
     expect(
       fixture.nativeElement.querySelector('a[href="/items/item-1/edit"]')
     ).toBeTruthy();
