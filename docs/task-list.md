@@ -34,10 +34,10 @@ This roadmap captures the first implementation work needed to move the app from 
    - ~~`PATCH /items/{id}`~~
    - ~~Archive behavior for removed items.~~
 
-6. Build the inventory list UI.
-   - Show items in a card or table layout.
-   - Filter by draft, ready to list, listed, sold, and archived.
-   - Search by title, category, and notes.
+6. ~~Build the inventory list UI.~~
+   - ~~Show items in a card or table layout.~~
+   - ~~Filter by draft, ready to list, listed, sold, and archived.~~
+   - ~~Search by title, category, and notes.~~
 
 7. Build the item capture and edit UI.
    - Optimize the form for mobile use.
