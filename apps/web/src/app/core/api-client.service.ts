@@ -34,6 +34,19 @@ export interface ListItemsResponse {
   items: InventoryItem[];
 }
 
+export interface SaveInventoryItemRequest {
+  title: string;
+  description: string;
+  category: string;
+  size: string;
+  condition: string;
+  price_cents: number;
+  currency: string;
+  notes: string;
+}
+
+export type UpdateInventoryItemRequest = Partial<SaveInventoryItemRequest>;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,5 +61,20 @@ export class ApiClientService {
     return this.http.get<ListItemsResponse>('/api/items', {
       params: status ? { status } : {}
     });
+  }
+
+  getItem(id: string): Observable<InventoryItem> {
+    return this.http.get<InventoryItem>(`/api/items/${id}`);
+  }
+
+  createItem(request: SaveInventoryItemRequest): Observable<InventoryItem> {
+    return this.http.post<InventoryItem>('/api/items', request);
+  }
+
+  updateItem(
+    id: string,
+    request: UpdateInventoryItemRequest
+  ): Observable<InventoryItem> {
+    return this.http.patch<InventoryItem>(`/api/items/${id}`, request);
   }
 }

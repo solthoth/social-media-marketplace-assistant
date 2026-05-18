@@ -39,10 +39,10 @@ This roadmap captures the first implementation work needed to move the app from 
    - ~~Filter by draft, ready to list, listed, sold, and archived.~~
    - ~~Search by title, category, and notes.~~
 
-7. Build the item capture and edit UI.
-   - Optimize the form for mobile use.
-   - Support saving drafts.
-   - Validate required item fields.
+7. ~~Build the item capture and edit UI.~~
+   - ~~Optimize the form for mobile use.~~
+   - ~~Support saving drafts.~~
+   - ~~Validate required item fields.~~
 
 8. Implement the status workflow.
    - Use initial statuses: `draft`, `ready_to_list`, `listed`, `sold`, and `archived`.
@@ -143,4 +143,4 @@ Start with these tasks:
 
 1. ~~Define and document the MVP data model and statuses.~~
 2. ~~Add SQLite persistence and the item CRUD API.~~
-3. Build the inventory list and item capture/edit UI.
+3. ~~Build the inventory list and item capture/edit UI.~~

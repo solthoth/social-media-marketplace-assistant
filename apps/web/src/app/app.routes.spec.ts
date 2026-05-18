@@ -3,6 +3,11 @@ import { routes } from './app.routes';
 
 describe('routes', () => {
   it('defines initial application routes', () => {
-    expect(routes.map((route) => route.path)).toEqual(['', 'items']);
+    expect(routes.map((route) => route.path)).toEqual([
+      '',
+      'items',
+      'items/new',
+      'items/:id/edit'
+    ]);
   });
 });
