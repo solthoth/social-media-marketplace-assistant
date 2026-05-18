@@ -10,18 +10,26 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/config"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/httpserver"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/storage/sqlite"
 )
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+
+	cfg := config.Load(os.Getenv)
+	startupCtx, cancelStartup := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelStartup()
+	db, err := sqlite.Open(startupCtx, cfg.DatabasePath)
+	if err != nil {
+		logger.Error("database initialization failed", "error", err)
+		os.Exit(1)
 	}
+	defer db.Close()
 
 	server := &http.Server{
-		Addr:              ":" + port,
+		Addr:              ":" + cfg.Port,
 		Handler:           httpserver.NewRouter(),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
