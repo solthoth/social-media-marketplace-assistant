@@ -6,6 +6,7 @@ import { ItemFormPageComponent } from './features/items/item-form-page.component
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     component: DashboardComponent
   },
   {

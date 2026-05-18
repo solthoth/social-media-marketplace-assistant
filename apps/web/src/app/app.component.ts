@@ -12,6 +12,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
         <nav aria-label="Primary navigation">
           <a routerLink="/">Dashboard</a>
           <a routerLink="/items">Items</a>
+          <a routerLink="/items/new">New item</a>
         </nav>
       </header>
 

@@ -10,4 +10,11 @@ describe('routes', () => {
       'items/:id/edit'
     ]);
   });
+
+  it('matches the dashboard only on the full root path', () => {
+    expect(routes[0]).toMatchObject({
+      path: '',
+      pathMatch: 'full'
+    });
+  });
 });
