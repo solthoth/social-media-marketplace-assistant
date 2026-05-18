@@ -47,6 +47,15 @@ func (s *ServiceSuite) TestCreateItemRequiresTitle() {
 	s.ErrorIs(err, ErrInvalidItem)
 }
 
+func (s *ServiceSuite) TestCreateItemRejectsUnsupportedCurrency() {
+	_, err := s.service.CreateItem(context.Background(), CreateItemInput{
+		Title:    "Foreign currency draft",
+		Currency: "EUR",
+	})
+
+	s.ErrorIs(err, ErrInvalidItem)
+}
+
 func (s *ServiceSuite) TestCreateItemDefaultsPricesToZero() {
 	item, err := s.service.CreateItem(context.Background(), CreateItemInput{
 		Title: "No price draft",

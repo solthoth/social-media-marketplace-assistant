@@ -46,7 +46,7 @@ Validation:
 - `title` is required.
 - `original_purchase_price_cents` defaults to `0` and must be zero or greater.
 - `selling_price_cents` defaults to `0` and must be zero or greater.
-- `currency` defaults to `USD` when omitted.
+- `currency` defaults to `USD` when omitted. Supported values: `USD`.
 
 ### List Items
 

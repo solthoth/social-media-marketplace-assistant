@@ -25,6 +25,16 @@ const (
 	ListingStatusRemoved   ListingStatus = "removed"
 )
 
+type Currency string
+
+const (
+	CurrencyUSD Currency = "USD"
+)
+
+func (c Currency) IsValid() bool {
+	return c == CurrencyUSD
+}
+
 type Money struct {
 	AmountCents int64
 	Currency    string
@@ -150,6 +160,9 @@ func (m Money) Validate() error {
 	}
 	if len(m.Currency) != 3 || m.Currency != strings.ToUpper(m.Currency) {
 		return errors.New("currency must be a three-letter uppercase code")
+	}
+	if !Currency(m.Currency).IsValid() {
+		return errors.New("currency must be one of the supported values")
 	}
 	return nil
 }

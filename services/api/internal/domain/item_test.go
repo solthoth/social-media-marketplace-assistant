@@ -55,4 +55,5 @@ func (s *ItemSuite) TestMoneyValidation() {
 	s.NoError((Money{AmountCents: 0, Currency: "USD"}).Validate())
 	s.Error((Money{AmountCents: -1, Currency: "USD"}).Validate())
 	s.Error((Money{AmountCents: 100, Currency: "usd"}).Validate())
+	s.Error((Money{AmountCents: 100, Currency: "EUR"}).Validate())
 }

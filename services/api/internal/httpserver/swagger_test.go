@@ -38,6 +38,10 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	properties := itemResponse["properties"].(map[string]any)
 	s.Contains(properties, "original_purchase_price_cents")
 	s.Contains(properties, "selling_price_cents")
+	currency := properties["currency"].(map[string]any)
+	s.Equal("#/components/schemas/Currency", currency["$ref"])
+	currencySchema := body.Components.Schemas["Currency"].(map[string]any)
+	s.Equal([]any{"USD"}, currencySchema["enum"])
 }
 
 func (s *SwaggerSuite) TestSwaggerUIIsServed() {
