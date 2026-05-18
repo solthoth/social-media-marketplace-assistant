@@ -8,6 +8,7 @@ This documentation describes the private inventory and listing assistant.
 - [Product vision](product-vision.md)
 - [Architecture](architecture.md)
 - [MVP data model](data-model.md)
+- [API](api.md)
 - [Initial task list](task-list.md)
 - [Development](development.md)
 - [Platform integrations](platform-integrations.md)

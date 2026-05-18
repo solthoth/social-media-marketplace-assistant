@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/items"
 )
 
 type healthResponse struct {
@@ -13,13 +14,23 @@ type healthResponse struct {
 	Time    string `json:"time"`
 }
 
-func NewRouter() http.Handler {
+const timeFormat = time.RFC3339
+
+type RouterDependencies struct {
+	ItemService *items.Service
+}
+
+func NewRouter(dependencies ...RouterDependencies) http.Handler {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
 
 	router.GET("/healthz", healthz)
 	router.GET("/", root)
+	registerSwaggerRoutes(router)
+	if len(dependencies) > 0 && dependencies[0].ItemService != nil {
+		registerItemRoutes(router, dependencies[0].ItemService)
+	}
 
 	return router
 }
@@ -35,6 +46,6 @@ func healthz(c *gin.Context) {
 	c.JSON(http.StatusOK, healthResponse{
 		Status:  "ok",
 		Service: "social-media-marketplace-assistant-api",
-		Time:    time.Now().UTC().Format(time.RFC3339),
+		Time:    time.Now().UTC().Format(timeFormat),
 	})
 }

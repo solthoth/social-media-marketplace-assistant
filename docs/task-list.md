@@ -27,12 +27,12 @@ This roadmap captures the first implementation work needed to move the app from 
 
 ## Phase 2: Inventory MVP
 
-5. Create the item API.
-   - `POST /items`
-   - `GET /items`
-   - `GET /items/{id}`
-   - `PATCH /items/{id}`
-   - Archive behavior for removed items.
+5. ~~Create the item API.~~
+   - ~~`POST /items`~~
+   - ~~`GET /items`~~
+   - ~~`GET /items/{id}`~~
+   - ~~`PATCH /items/{id}`~~
+   - ~~Archive behavior for removed items.~~
 
 6. Build the inventory list UI.
    - Show items in a card or table layout.
@@ -142,5 +142,5 @@ This roadmap captures the first implementation work needed to move the app from 
 Start with these tasks:
 
 1. ~~Define and document the MVP data model and statuses.~~
-2. Add SQLite persistence and the item CRUD API.
+2. ~~Add SQLite persistence and the item CRUD API.~~
 3. Build the inventory list and item capture/edit UI.

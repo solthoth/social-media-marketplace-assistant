@@ -73,6 +73,12 @@ Run backend tests only:
 make test-api
 ```
 
+Run backend integration tests only:
+
+```sh
+make test-api-integration
+```
+
 Run frontend tests only:
 
 ```sh
@@ -96,3 +102,7 @@ npm run verify
 ## Data Model
 
 See [data-model.md](data-model.md) for the current MVP entities, statuses, and persistence assumptions.
+
+## API
+
+See [api.md](api.md) for the current API endpoints and response shapes.

@@ -74,6 +74,9 @@ jobs:
       - name: Run API tests
         run: npm run api:test
 
+      - name: Run API integration tests
+        run: npm run api:integration:test
+
   web:
     name: Web Checks
     runs-on: ubuntu-latest
