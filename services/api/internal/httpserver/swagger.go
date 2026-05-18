@@ -162,6 +162,10 @@ func newOpenAPIDocument() openAPIDocument {
 					"type": "string",
 					"enum": []string{"draft", "ready_to_list", "listed", "sold", "archived"},
 				},
+				"Currency": map[string]any{
+					"type": "string",
+					"enum": []string{"USD"},
+				},
 				"CreateItemRequest": itemRequestSchema(false),
 				"UpdateItemRequest": itemRequestSchema(true),
 				"ItemResponse": map[string]any{
@@ -175,7 +179,7 @@ func newOpenAPIDocument() openAPIDocument {
 						"condition":                     stringSchema(),
 						"original_purchase_price_cents": integerSchema(),
 						"selling_price_cents":           integerSchema(),
-						"currency":                      stringSchema(),
+						"currency":                      schemaRef("Currency"),
 						"status":                        schemaRef("InventoryStatus"),
 						"notes":                         stringSchema(),
 						"created_at":                    stringSchemaWithFormat("date-time"),
@@ -219,7 +223,7 @@ func itemRequestSchema(partial bool) map[string]any {
 			"condition":                     stringSchema(),
 			"original_purchase_price_cents": integerSchema(),
 			"selling_price_cents":           integerSchema(),
-			"currency":                      stringSchema(),
+			"currency":                      schemaRef("Currency"),
 			"notes":                         stringSchema(),
 		},
 	}

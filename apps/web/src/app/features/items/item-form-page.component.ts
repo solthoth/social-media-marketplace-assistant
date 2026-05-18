@@ -1,15 +1,19 @@
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   ApiClientService,
+  Currency,
   InventoryItem,
   SaveInventoryItemRequest
 } from '../../core/api-client.service';
+
+const currencies: Currency[] = ['USD'];
 
 @Component({
   selector: 'smm-item-form-page',
@@ -18,6 +22,8 @@ import {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    NgFor,
     NgIf,
     ReactiveFormsModule,
     RouterLink
@@ -139,14 +145,15 @@ import {
 
           <mat-form-field appearance="outline">
             <mat-label>Currency</mat-label>
-            <input
-              matInput
+            <select
+              matNativeControl
               data-testid="item-currency"
-              type="text"
-              maxlength="3"
               formControlName="currency"
-              autocomplete="off"
-            />
+            >
+              <option *ngFor="let currency of currencies" [value]="currency">
+                {{ currency }}
+              </option>
+            </select>
           </mat-form-field>
         </div>
 
@@ -194,6 +201,7 @@ export class ItemFormPageComponent implements OnInit {
   protected readonly saveError = signal(false);
   protected readonly itemId = signal<string | null>(null);
   protected readonly isEditMode = signal(false);
+  protected readonly currencies = currencies;
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', Validators.required],
@@ -203,7 +211,7 @@ export class ItemFormPageComponent implements OnInit {
     condition: [''],
     originalPurchasePrice: [0, Validators.min(0)],
     sellingPrice: [0, Validators.min(0)],
-    currency: ['USD', [Validators.required, Validators.pattern(/[A-Za-z]{3}/)]],
+    currency: ['USD' as Currency, Validators.required],
     notes: ['']
   });
 
@@ -288,7 +296,7 @@ export class ItemFormPageComponent implements OnInit {
         Number(value.originalPurchasePrice || 0) * 100
       ),
       selling_price_cents: Math.round(Number(value.sellingPrice || 0) * 100),
-      currency: value.currency.trim().toUpperCase(),
+      currency: value.currency,
       notes: value.notes.trim()
     };
   }

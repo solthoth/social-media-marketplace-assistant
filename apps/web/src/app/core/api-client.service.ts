@@ -15,6 +15,8 @@ export type InventoryStatus =
   | 'sold'
   | 'archived';
 
+export type Currency = 'USD';
+
 export interface InventoryItem {
   id: string;
   title: string;
@@ -24,7 +26,7 @@ export interface InventoryItem {
   condition: string;
   original_purchase_price_cents: number;
   selling_price_cents: number;
-  currency: string;
+  currency: Currency;
   status: InventoryStatus;
   notes: string;
   created_at: string;
@@ -43,7 +45,7 @@ export interface SaveInventoryItemRequest {
   condition: string;
   original_purchase_price_cents: number;
   selling_price_cents: number;
-  currency: string;
+  currency: Currency;
   notes: string;
 }
 

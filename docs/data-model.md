@@ -16,7 +16,7 @@ Initial fields:
 - `condition`: flexible text field for the seller's condition notes.
 - `original_purchase_price_cents`: optional integer amount in the smallest currency unit. Defaults to `0`.
 - `selling_price_cents`: optional integer amount in the smallest currency unit. Defaults to `0`.
-- `currency`: three-letter uppercase currency code. Default is `USD`.
+- `currency`: supported currency code. Default and currently only allowed value is `USD`.
 - `status`: inventory status.
 - `notes`: private seller notes.
 - `created_at` and `updated_at`: UTC timestamps.

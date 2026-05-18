@@ -23,6 +23,12 @@ describe('ItemFormPageComponent', () => {
     expect(
       fixture.nativeElement.querySelectorAll('mat-form-field').length
     ).toBe(9);
+    const currency: HTMLSelectElement = fixture.nativeElement.querySelector(
+      '[data-testid="item-currency"]'
+    );
+    expect(Array.from(currency.options).map((option) => option.value)).toEqual([
+      'USD'
+    ]);
     http.expectNone('/api/items');
     http.verify();
   });
@@ -37,7 +43,6 @@ describe('ItemFormPageComponent', () => {
     fillInput(fixture, 'item-condition', 'Good');
     fillInput(fixture, 'item-original-purchase-price', '18');
     fillInput(fixture, 'item-selling-price', '32.50');
-    fillInput(fixture, 'item-currency', 'usd');
     fillInput(fixture, 'item-notes', 'Steam before photos');
     clickSave(fixture);
 
