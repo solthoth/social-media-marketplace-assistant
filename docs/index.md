@@ -7,5 +7,6 @@ This documentation describes the private inventory and listing assistant.
 - [Project context](context.md)
 - [Product vision](product-vision.md)
 - [Architecture](architecture.md)
+- [Initial task list](task-list.md)
 - [Development](development.md)
 - [Platform integrations](platform-integrations.md)
