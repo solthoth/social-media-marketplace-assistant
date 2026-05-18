@@ -89,4 +89,97 @@ describe('ApiClientService', () => {
 
     http.verify();
   });
+
+  it('creates an inventory item draft', () => {
+    const { client, http } = setup();
+
+    client
+      .createItem({
+        title: 'Denim jacket',
+        description: 'Medium wash',
+        category: 'Clothing',
+        size: 'M',
+        condition: 'Good',
+        price_cents: 3200,
+        currency: 'USD',
+        notes: 'Steam before photos'
+      })
+      .subscribe((item) => {
+        expect(item.id).toBe('item-1');
+        expect(item.status).toBe('draft');
+      });
+
+    const request = http.expectOne('/api/items');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      title: 'Denim jacket',
+      description: 'Medium wash',
+      category: 'Clothing',
+      size: 'M',
+      condition: 'Good',
+      price_cents: 3200,
+      currency: 'USD',
+      notes: 'Steam before photos'
+    });
+    request.flush(itemFixture());
+
+    http.verify();
+  });
+
+  it('requests one inventory item', () => {
+    const { client, http } = setup();
+
+    client.getItem('item-1').subscribe((item) => {
+      expect(item.title).toBe('Denim jacket');
+    });
+
+    const request = http.expectOne('/api/items/item-1');
+    expect(request.request.method).toBe('GET');
+    request.flush(itemFixture());
+
+    http.verify();
+  });
+
+  it('updates an inventory item', () => {
+    const { client, http } = setup();
+
+    client
+      .updateItem('item-1', {
+        title: 'Updated denim jacket',
+        price_cents: 3600,
+        currency: 'USD'
+      })
+      .subscribe((item) => {
+        expect(item.title).toBe('Updated denim jacket');
+      });
+
+    const request = http.expectOne('/api/items/item-1');
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({
+      title: 'Updated denim jacket',
+      price_cents: 3600,
+      currency: 'USD'
+    });
+    request.flush(itemFixture({ title: 'Updated denim jacket' }));
+
+    http.verify();
+  });
 });
+
+function itemFixture(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'item-1',
+    title: 'Denim jacket',
+    description: 'Medium wash',
+    category: 'Clothing',
+    size: 'M',
+    condition: 'Good',
+    price_cents: 3200,
+    currency: 'USD',
+    status: 'draft',
+    notes: 'Steam before photos',
+    created_at: '2026-05-18T00:00:00Z',
+    updated_at: '2026-05-18T00:00:00Z',
+    ...overrides
+  };
+}

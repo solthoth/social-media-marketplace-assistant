@@ -39,6 +39,8 @@ The frontend calls API routes through the `/api` path. The Angular development s
 
 The inventory page at `/items` loads item records from `GET /api/items`, supports status filtering, and filters the loaded result set by title, category, or notes.
 
+Use `/items/new` to capture a new draft item. Use `/items/{id}/edit` to edit an existing item from the inventory list. The form stores prices as decimal dollars in the UI and sends integer cents to the API.
+
 ## Docker Compose
 
 Build and run the web and API containers:

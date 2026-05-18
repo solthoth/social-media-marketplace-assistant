@@ -1,5 +1,6 @@
 import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   ApiClientService,
   InventoryItem,
@@ -19,7 +20,7 @@ const statusLabels: Record<InventoryStatus, string> = {
 @Component({
   selector: 'smm-inventory-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, NgFor, NgIf],
+  imports: [CurrencyPipe, DatePipe, NgFor, NgIf, RouterLink],
   template: `
     <section class="inventory-page">
       <div class="inventory-header">
@@ -35,6 +36,7 @@ const statusLabels: Record<InventoryStatus, string> = {
           {{ filteredItems().length }}
           {{ filteredItems().length === 1 ? 'item' : 'items' }}
         </div>
+        <a class="primary-action" routerLink="/items/new">New item</a>
       </div>
 
       <div class="inventory-toolbar" aria-label="Inventory filters">
@@ -106,6 +108,12 @@ const statusLabels: Record<InventoryStatus, string> = {
             {{ item.description }}
           </p>
           <p class="item-notes" *ngIf="item.notes">{{ item.notes }}</p>
+          <a
+            class="secondary-action"
+            [routerLink]="['/items', item.id, 'edit']"
+          >
+            Edit
+          </a>
         </article>
       </section>
 

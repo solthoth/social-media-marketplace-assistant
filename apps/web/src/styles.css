@@ -72,6 +72,7 @@ nav a {
   justify-content: space-between;
   gap: 20px;
   align-items: end;
+  flex-wrap: wrap;
 }
 
 .inventory-count {
@@ -204,6 +205,109 @@ nav a {
   border-top: 1px solid #edf1f3;
 }
 
+.primary-action,
+.secondary-action {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 13px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary-action {
+  border: 1px solid #2f6f73;
+  background: #2f6f73;
+  color: #ffffff;
+}
+
+.secondary-action {
+  border: 1px solid #bcc8ce;
+  background: #ffffff;
+  color: #2f6f73;
+}
+
+.button-action {
+  cursor: pointer;
+}
+
+.button-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.item-form-page {
+  display: grid;
+  gap: 22px;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: end;
+}
+
+.item-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.item-form label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #52616b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.item-form input,
+.item-form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 11px;
+  border: 1px solid #bcc8ce;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172026;
+  font: inherit;
+}
+
+.item-form textarea {
+  resize: vertical;
+}
+
+.full-width,
+.price-row,
+.form-actions,
+.item-form .notice {
+  grid-column: 1 / -1;
+}
+
+.price-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(96px, 140px);
+  gap: 16px;
+}
+
+.field-error {
+  color: #8a2d21;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .eyebrow {
   margin: 0;
   color: #2f6f73;
@@ -272,5 +376,20 @@ strong {
 
   .status-panel {
     grid-template-columns: 1fr;
+  }
+
+  .form-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .item-form,
+  .price-row {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-action,
+  .secondary-action {
+    width: 100%;
   }
 }

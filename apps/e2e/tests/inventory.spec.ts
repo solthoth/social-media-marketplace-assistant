@@ -63,3 +63,73 @@ test('filters inventory by search text', async ({ page, request }) => {
   await expect(page.getByText(title)).toBeVisible();
   await expect(page.getByText('No inventory items')).toBeHidden();
 });
+
+test('creates a draft item from the item form', async ({ page }) => {
+  const title = `E2E silk scarf ${Date.now()}`;
+
+  await page.goto('/items/new');
+  await page.getByTestId('item-title').fill(title);
+  await page.getByTestId('item-description').fill('Created through the UI');
+  await page.getByTestId('item-category').fill('Accessories');
+  await page.getByTestId('item-size').fill('One size');
+  await page.getByTestId('item-condition').fill('Excellent');
+  await page.getByTestId('item-price').fill('18.50');
+  await page.getByTestId('item-notes').fill('Fold neatly before listing');
+  await page.getByTestId('save-draft').click();
+
+  await expect(page).toHaveURL(/\/items$/);
+  await expect(page.getByText(title)).toBeVisible();
+  await expect(
+    page.locator('article').filter({ hasText: title }).getByText('$18.50')
+  ).toBeVisible();
+});
+
+test('requires a title when saving the item form', async ({ page }) => {
+  await page.goto('/items/new');
+  await page.getByTestId('save-draft').click();
+
+  await expect(page.getByText('Title is required')).toBeVisible();
+  await expect(page).toHaveURL(/\/items\/new$/);
+});
+
+test('edits an existing item from the inventory list', async ({
+  page,
+  request
+}) => {
+  const title = `E2E wool coat ${Date.now()}`;
+  const updatedTitle = `${title} updated`;
+
+  const response = await request.post(`${apiUrl}/items`, {
+    data: {
+      title,
+      description: 'Created before editing',
+      category: 'Clothing',
+      size: 'L',
+      condition: 'Good',
+      price_cents: 6400,
+      currency: 'USD',
+      notes: 'Needs lint roller'
+    }
+  });
+  expect(response.ok()).toBeTruthy();
+
+  await page.goto('/items');
+  await page
+    .locator('article')
+    .filter({ hasText: title })
+    .getByRole('link', { name: 'Edit' })
+    .click();
+
+  await page.getByTestId('item-title').fill(updatedTitle);
+  await page.getByTestId('item-price').fill('72');
+  await page.getByTestId('save-draft').click();
+
+  await expect(page).toHaveURL(/\/items$/);
+  await expect(page.getByText(updatedTitle)).toBeVisible();
+  await expect(
+    page
+      .locator('article')
+      .filter({ hasText: updatedTitle })
+      .getByText('$72.00')
+  ).toBeVisible();
+});

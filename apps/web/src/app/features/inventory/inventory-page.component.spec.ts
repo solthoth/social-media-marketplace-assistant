@@ -4,6 +4,7 @@ import {
   provideHttpClientTesting
 } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 import { InventoryPageComponent } from './inventory-page.component';
 
@@ -11,7 +12,11 @@ describe('InventoryPageComponent', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [InventoryPageComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([])
+      ]
     });
 
     const fixture = TestBed.createComponent(InventoryPageComponent);
@@ -47,6 +52,12 @@ describe('InventoryPageComponent', () => {
     expect(text).toContain('Leather boots');
     expect(text).toContain('$32.00');
     expect(text).toContain('2 items');
+    expect(
+      fixture.nativeElement.querySelector('a[href="/items/new"]')
+    ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('a[href="/items/item-1/edit"]')
+    ).toBeTruthy();
   });
 
   it('filters loaded items by search text', () => {
