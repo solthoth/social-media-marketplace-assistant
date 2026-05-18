@@ -29,6 +29,20 @@ Initial responsibilities:
 - Future item, media, account, and publishing endpoints.
 - Integration boundary for platform-specific publishers.
 
+Initial package boundaries:
+
+- `internal/domain`: core entities and value objects.
+- `internal/config`: environment-backed application configuration.
+- `internal/httpserver`: HTTP routing and response helpers.
+- `internal/items`: item service boundary.
+- `internal/storage/sqlite`: SQLite connection and migrations.
+
+## Persistence
+
+The first persistence target is SQLite using a pure Go driver. This keeps local development and CI simple while the app is private and early-stage.
+
+Persistence should stay behind repository interfaces so a future Postgres migration does not force handlers or frontend contracts to change.
+
 ## Integration Boundary
 
 Platform integrations should be treated as adapters behind internal interfaces. Each adapter should document:
