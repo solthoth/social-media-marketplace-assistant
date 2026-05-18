@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "apps/web"
+    "apps/web",
+    "apps/e2e"
   ],
   "scripts": {
     "api:fmt:check": "test -z \"$(gofmt -l services/api)\"",
@@ -16,6 +17,7 @@
     "web:start": "npm --workspace apps/web start",
     "web:build": "npm --workspace apps/web run build",
     "web:test": "npm --workspace apps/web run test",
+    "e2e:test": "npm --workspace apps/e2e test",
     "test": "npm run api:test && npm run web:test",
     "verify": "npm run format:check && npm run api:fmt:check && npm run api:vet && npm run web:build && npm test && npm run api:integration:test"
   },
