@@ -43,6 +43,13 @@ func (s *SwaggerSuite) TestSwaggerUIIsServed() {
 	s.Contains(response.Body.String(), "/swagger/doc.json")
 }
 
+func (s *SwaggerSuite) TestSwaggerRouteRedirectsToIndex() {
+	response := s.request(http.MethodGet, "/swagger")
+
+	s.Equal(http.StatusMovedPermanently, response.Code)
+	s.Equal("/swagger/index.html", response.Header().Get("Location"))
+}
+
 func (s *SwaggerSuite) request(method string, target string) *httptest.ResponseRecorder {
 	request := httptest.NewRequest(method, target, nil)
 	response := httptest.NewRecorder()

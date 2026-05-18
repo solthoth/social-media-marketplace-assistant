@@ -29,8 +29,13 @@ type openAPIComponents struct {
 }
 
 func registerSwaggerRoutes(router *gin.Engine) {
+	router.GET("/swagger", swaggerIndexRedirect)
 	router.GET("/swagger/doc.json", swaggerDocument)
 	router.GET("/swagger/index.html", swaggerUI)
+}
+
+func swaggerIndexRedirect(c *gin.Context) {
+	c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
 }
 
 func swaggerDocument(c *gin.Context) {
