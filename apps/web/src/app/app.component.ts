@@ -1,18 +1,21 @@
 import { Component } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'smm-root',
   standalone: true,
+  imports: [RouterLink, RouterOutlet],
   template: `
     <main class="app-shell">
-      <section class="intro">
-        <p class="eyebrow">Inventory first</p>
-        <h1>Marketplace Assistant</h1>
-        <p class="summary">
-          Capture items once, keep inventory organized, and prepare listings for
-          connected sales channels.
-        </p>
-      </section>
+      <header class="topbar">
+        <a class="brand" routerLink="/">Marketplace Assistant</a>
+        <nav aria-label="Primary navigation">
+          <a routerLink="/">Dashboard</a>
+          <a routerLink="/items">Items</a>
+        </nav>
+      </header>
+
+      <router-outlet />
 
       <section class="status-panel" aria-label="Application status">
         <div>

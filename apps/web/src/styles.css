@@ -25,13 +25,39 @@ body {
   display: grid;
   gap: 24px;
   min-height: 100vh;
-  align-content: center;
+  align-content: start;
   padding: 40px 20px;
   max-width: 920px;
   margin: 0 auto;
 }
 
-.intro {
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d7dee2;
+}
+
+.brand {
+  color: #172026;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 14px;
+}
+
+nav a {
+  color: #2f6f73;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.page-section {
   display: grid;
   gap: 12px;
 }
@@ -88,6 +114,11 @@ strong {
 }
 
 @media (max-width: 640px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .status-panel {
     grid-template-columns: 1fr;
   }
