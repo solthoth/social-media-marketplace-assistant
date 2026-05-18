@@ -97,6 +97,14 @@ Run frontend tests only:
 make test-web
 ```
 
+Run end-to-end tests:
+
+```sh
+npm run e2e:test
+```
+
+Playwright starts the API and frontend dev server for the E2E suite. These tests are intentionally not part of the pre-commit hook.
+
 ## Verification
 
 Run the local equivalent of the CI checks:
