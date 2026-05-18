@@ -11,6 +11,7 @@ make run-api
 Environment variables:
 
 - `PORT`: API port. Defaults to `8080`.
+- `DATABASE_PATH`: SQLite database path. Defaults to `data/app.db`.
 
 Health endpoint:
 
@@ -33,6 +34,8 @@ make run-web
 ```
 
 The Angular dev server should be available at `http://localhost:4200`.
+
+The frontend calls API routes through the `/api` path. Local proxy configuration will be added when the first backend feature endpoint is implemented.
 
 ## Git Hooks
 
@@ -89,3 +92,7 @@ or:
 ```sh
 npm run verify
 ```
+
+## Data Model
+
+See [data-model.md](data-model.md) for the current MVP entities, statuses, and persistence assumptions.

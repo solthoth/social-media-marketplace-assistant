@@ -4,26 +4,26 @@ This roadmap captures the first implementation work needed to move the app from 
 
 ## Phase 1: App Foundation
 
-1. Define the MVP data model.
-   - Include item, item photo, inventory status, listing status, connected account, and sale.
-   - Decide the first required item fields: title, description, category, size, condition, price, status, and notes.
+1. ~~Define the MVP data model.~~
+   - ~~Include item, item photo, inventory status, listing status, connected account, and sale.~~
+   - ~~Decide the first required item fields: title, description, category, size, condition, price, status, and notes.~~
 
-2. Choose persistence.
-   - Start with SQLite for local development and early private deployment.
-   - Keep persistence behind a repository interface so Postgres or another database can replace it later.
-   - Add migrations and database setup documentation.
+2. ~~Choose persistence.~~
+   - ~~Start with SQLite for local development and early private deployment.~~
+   - ~~Keep persistence behind a repository interface so Postgres or another database can replace it later.~~
+   - ~~Add migrations and database setup documentation.~~
 
-3. Structure the backend API.
-   - Add package boundaries for handlers, services, repositories, and storage.
-   - Add a consistent error response shape.
-   - Add a request validation pattern.
-   - Keep `/healthz` as the operational health endpoint.
+3. ~~Structure the backend API.~~
+   - ~~Add package boundaries for handlers, services, repositories, and storage.~~
+   - ~~Add a consistent error response shape.~~
+   - ~~Add a request validation pattern.~~
+   - ~~Keep `/healthz` as the operational health endpoint.~~
 
-4. Structure the frontend app.
-   - Add routing.
-   - Add an app shell and navigation.
-   - Add an API client service.
-   - Establish shared UI and state conventions.
+4. ~~Structure the frontend app.~~
+   - ~~Add routing.~~
+   - ~~Add an app shell and navigation.~~
+   - ~~Add an API client service.~~
+   - ~~Establish shared UI and state conventions.~~
 
 ## Phase 2: Inventory MVP
 
@@ -141,6 +141,6 @@ This roadmap captures the first implementation work needed to move the app from 
 
 Start with these tasks:
 
-1. Define and document the MVP data model and statuses.
+1. ~~Define and document the MVP data model and statuses.~~
 2. Add SQLite persistence and the item CRUD API.
 3. Build the inventory list and item capture/edit UI.
