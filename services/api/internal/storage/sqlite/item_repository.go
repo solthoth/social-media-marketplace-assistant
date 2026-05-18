@@ -23,16 +23,17 @@ func NewItemRepository(db *sql.DB) ItemRepository {
 func (r ItemRepository) Create(ctx context.Context, item domain.Item) (domain.Item, error) {
 	_, err := r.db.ExecContext(ctx, `
 insert into items (
-  id, title, description, category, size, condition, price_cents, currency, status, notes, created_at, updated_at
-) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  id, title, description, category, size, condition, original_purchase_price_cents, selling_price_cents, currency, status, notes, created_at, updated_at
+) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		item.ID,
 		item.Title,
 		item.Description,
 		item.Category,
 		item.Size,
 		item.Condition,
-		item.Price.AmountCents,
-		item.Price.Currency,
+		item.OriginalPurchasePrice.AmountCents,
+		item.SellingPrice.AmountCents,
+		item.SellingPrice.Currency,
 		item.Status,
 		item.Notes,
 		formatTime(item.CreatedAt),
@@ -46,7 +47,7 @@ insert into items (
 
 func (r ItemRepository) List(ctx context.Context, filter items.ListItemsFilter) ([]domain.Item, error) {
 	query := `
-select id, title, description, category, size, condition, price_cents, currency, status, notes, created_at, updated_at
+select id, title, description, category, size, condition, original_purchase_price_cents, selling_price_cents, currency, status, notes, created_at, updated_at
 from items`
 	args := []any{}
 	if filter.Status != nil {
@@ -77,7 +78,7 @@ from items`
 
 func (r ItemRepository) Get(ctx context.Context, id string) (domain.Item, error) {
 	row := r.db.QueryRowContext(ctx, `
-select id, title, description, category, size, condition, price_cents, currency, status, notes, created_at, updated_at
+select id, title, description, category, size, condition, original_purchase_price_cents, selling_price_cents, currency, status, notes, created_at, updated_at
 from items
 where id = ?`, id)
 
@@ -99,7 +100,8 @@ set title = ?,
     category = ?,
     size = ?,
     condition = ?,
-    price_cents = ?,
+    original_purchase_price_cents = ?,
+    selling_price_cents = ?,
     currency = ?,
     status = ?,
     notes = ?,
@@ -110,8 +112,9 @@ where id = ?`,
 		item.Category,
 		item.Size,
 		item.Condition,
-		item.Price.AmountCents,
-		item.Price.Currency,
+		item.OriginalPurchasePrice.AmountCents,
+		item.SellingPrice.AmountCents,
+		item.SellingPrice.Currency,
 		item.Status,
 		item.Notes,
 		formatTime(item.UpdatedAt),
@@ -146,8 +149,9 @@ func scanItem(scanner itemScanner) (domain.Item, error) {
 		&item.Category,
 		&item.Size,
 		&item.Condition,
-		&item.Price.AmountCents,
-		&item.Price.Currency,
+		&item.OriginalPurchasePrice.AmountCents,
+		&item.SellingPrice.AmountCents,
+		&item.SellingPrice.Currency,
 		&status,
 		&item.Notes,
 		&createdAt,
@@ -157,6 +161,7 @@ func scanItem(scanner itemScanner) (domain.Item, error) {
 		return domain.Item{}, err
 	}
 
+	item.OriginalPurchasePrice.Currency = item.SellingPrice.Currency
 	item.Status = domain.InventoryStatus(status)
 	item.CreatedAt, err = parseTime(createdAt)
 	if err != nil {

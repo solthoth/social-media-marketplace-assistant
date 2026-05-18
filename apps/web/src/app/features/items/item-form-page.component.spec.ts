@@ -22,7 +22,7 @@ describe('ItemFormPageComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Title is required');
     expect(
       fixture.nativeElement.querySelectorAll('mat-form-field').length
-    ).toBe(8);
+    ).toBe(9);
     http.expectNone('/api/items');
     http.verify();
   });
@@ -35,7 +35,8 @@ describe('ItemFormPageComponent', () => {
     fillInput(fixture, 'item-category', 'Clothing');
     fillInput(fixture, 'item-size', 'M');
     fillInput(fixture, 'item-condition', 'Good');
-    fillInput(fixture, 'item-price', '32.50');
+    fillInput(fixture, 'item-original-purchase-price', '18');
+    fillInput(fixture, 'item-selling-price', '32.50');
     fillInput(fixture, 'item-currency', 'usd');
     fillInput(fixture, 'item-notes', 'Steam before photos');
     clickSave(fixture);
@@ -48,7 +49,8 @@ describe('ItemFormPageComponent', () => {
       category: 'Clothing',
       size: 'M',
       condition: 'Good',
-      price_cents: 3250,
+      original_purchase_price_cents: 1800,
+      selling_price_cents: 3250,
       currency: 'USD',
       notes: 'Steam before photos'
     });
@@ -74,13 +76,15 @@ describe('ItemFormPageComponent', () => {
     expect(title.value).toBe('Denim jacket');
 
     fillInput(fixture, 'item-title', 'Updated denim jacket');
-    fillInput(fixture, 'item-price', '36');
+    fillInput(fixture, 'item-original-purchase-price', '20');
+    fillInput(fixture, 'item-selling-price', '36');
     clickSave(fixture);
 
     const patchRequest = http.expectOne('/api/items/item-1');
     expect(patchRequest.request.method).toBe('PATCH');
     expect(patchRequest.request.body.title).toBe('Updated denim jacket');
-    expect(patchRequest.request.body.price_cents).toBe(3600);
+    expect(patchRequest.request.body.original_purchase_price_cents).toBe(2000);
+    expect(patchRequest.request.body.selling_price_cents).toBe(3600);
     patchRequest.flush(itemFixture({ title: 'Updated denim jacket' }));
     fixture.detectChanges();
     await fixture.whenStable();
@@ -146,7 +150,8 @@ function itemFixture(overrides: Record<string, unknown> = {}) {
     category: 'Clothing',
     size: 'M',
     condition: 'Good',
-    price_cents: 3200,
+    original_purchase_price_cents: 1800,
+    selling_price_cents: 3200,
     currency: 'USD',
     status: 'draft',
     notes: 'Steam before photos',

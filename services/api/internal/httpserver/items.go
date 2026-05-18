@@ -23,41 +23,44 @@ type itemRoutes struct {
 }
 
 type createItemRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Category    string `json:"category"`
-	Size        string `json:"size"`
-	Condition   string `json:"condition"`
-	PriceCents  int64  `json:"price_cents"`
-	Currency    string `json:"currency"`
-	Notes       string `json:"notes"`
+	Title                      string `json:"title"`
+	Description                string `json:"description"`
+	Category                   string `json:"category"`
+	Size                       string `json:"size"`
+	Condition                  string `json:"condition"`
+	OriginalPurchasePriceCents int64  `json:"original_purchase_price_cents"`
+	SellingPriceCents          int64  `json:"selling_price_cents"`
+	Currency                   string `json:"currency"`
+	Notes                      string `json:"notes"`
 }
 
 type updateItemRequest struct {
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Category    *string `json:"category"`
-	Size        *string `json:"size"`
-	Condition   *string `json:"condition"`
-	PriceCents  *int64  `json:"price_cents"`
-	Currency    *string `json:"currency"`
-	Status      *string `json:"status"`
-	Notes       *string `json:"notes"`
+	Title                      *string `json:"title"`
+	Description                *string `json:"description"`
+	Category                   *string `json:"category"`
+	Size                       *string `json:"size"`
+	Condition                  *string `json:"condition"`
+	OriginalPurchasePriceCents *int64  `json:"original_purchase_price_cents"`
+	SellingPriceCents          *int64  `json:"selling_price_cents"`
+	Currency                   *string `json:"currency"`
+	Status                     *string `json:"status"`
+	Notes                      *string `json:"notes"`
 }
 
 type itemResponse struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Category    string `json:"category"`
-	Size        string `json:"size"`
-	Condition   string `json:"condition"`
-	PriceCents  int64  `json:"price_cents"`
-	Currency    string `json:"currency"`
-	Status      string `json:"status"`
-	Notes       string `json:"notes"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	ID                         string `json:"id"`
+	Title                      string `json:"title"`
+	Description                string `json:"description"`
+	Category                   string `json:"category"`
+	Size                       string `json:"size"`
+	Condition                  string `json:"condition"`
+	OriginalPurchasePriceCents int64  `json:"original_purchase_price_cents"`
+	SellingPriceCents          int64  `json:"selling_price_cents"`
+	Currency                   string `json:"currency"`
+	Status                     string `json:"status"`
+	Notes                      string `json:"notes"`
+	CreatedAt                  string `json:"created_at"`
+	UpdatedAt                  string `json:"updated_at"`
 }
 
 type listItemsResponse struct {
@@ -80,7 +83,17 @@ func (r itemRoutes) create(c *gin.Context) {
 		return
 	}
 
-	item, err := r.service.CreateItem(c.Request.Context(), items.CreateItemInput(request))
+	item, err := r.service.CreateItem(c.Request.Context(), items.CreateItemInput{
+		Title:                      request.Title,
+		Description:                request.Description,
+		Category:                   request.Category,
+		Size:                       request.Size,
+		Condition:                  request.Condition,
+		OriginalPurchasePriceCents: request.OriginalPurchasePriceCents,
+		SellingPriceCents:          request.SellingPriceCents,
+		Currency:                   request.Currency,
+		Notes:                      request.Notes,
+	})
 	if err != nil {
 		writeItemServiceError(c, err)
 		return
@@ -127,14 +140,15 @@ func (r itemRoutes) update(c *gin.Context) {
 	}
 
 	input := items.UpdateItemInput{
-		Title:       request.Title,
-		Description: request.Description,
-		Category:    request.Category,
-		Size:        request.Size,
-		Condition:   request.Condition,
-		PriceCents:  request.PriceCents,
-		Currency:    request.Currency,
-		Notes:       request.Notes,
+		Title:                      request.Title,
+		Description:                request.Description,
+		Category:                   request.Category,
+		Size:                       request.Size,
+		Condition:                  request.Condition,
+		OriginalPurchasePriceCents: request.OriginalPurchasePriceCents,
+		SellingPriceCents:          request.SellingPriceCents,
+		Currency:                   request.Currency,
+		Notes:                      request.Notes,
 	}
 	if request.Status != nil {
 		status := domain.InventoryStatus(*request.Status)
@@ -162,18 +176,19 @@ func (r itemRoutes) archive(c *gin.Context) {
 
 func newItemResponse(item domain.Item) itemResponse {
 	return itemResponse{
-		ID:          item.ID,
-		Title:       item.Title,
-		Description: item.Description,
-		Category:    item.Category,
-		Size:        item.Size,
-		Condition:   item.Condition,
-		PriceCents:  item.Price.AmountCents,
-		Currency:    item.Price.Currency,
-		Status:      string(item.Status),
-		Notes:       item.Notes,
-		CreatedAt:   item.CreatedAt.Format(timeFormat),
-		UpdatedAt:   item.UpdatedAt.Format(timeFormat),
+		ID:                         item.ID,
+		Title:                      item.Title,
+		Description:                item.Description,
+		Category:                   item.Category,
+		Size:                       item.Size,
+		Condition:                  item.Condition,
+		OriginalPurchasePriceCents: item.OriginalPurchasePrice.AmountCents,
+		SellingPriceCents:          item.SellingPrice.AmountCents,
+		Currency:                   item.SellingPrice.Currency,
+		Status:                     string(item.Status),
+		Notes:                      item.Notes,
+		CreatedAt:                  item.CreatedAt.Format(timeFormat),
+		UpdatedAt:                  item.UpdatedAt.Format(timeFormat),
 	}
 }
 

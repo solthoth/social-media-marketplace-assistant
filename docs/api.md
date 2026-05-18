@@ -32,7 +32,8 @@ Request body:
   "category": "Clothing",
   "size": "M",
   "condition": "Good",
-  "price_cents": 3200,
+  "original_purchase_price_cents": 1800,
+  "selling_price_cents": 3200,
   "currency": "USD",
   "notes": "Steam before photos"
 }
@@ -43,7 +44,8 @@ Response: `201 Created` with the item.
 Validation:
 
 - `title` is required.
-- `price_cents` must be zero or greater.
+- `original_purchase_price_cents` defaults to `0` and must be zero or greater.
+- `selling_price_cents` defaults to `0` and must be zero or greater.
 - `currency` defaults to `USD` when omitted.
 
 ### List Items

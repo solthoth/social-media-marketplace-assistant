@@ -14,7 +14,8 @@ Initial fields:
 - `category`: flexible text field. This intentionally starts as free text so categories can evolve from real seller usage.
 - `size`: flexible text field for clothing, shoes, or other size labels.
 - `condition`: flexible text field for the seller's condition notes.
-- `price_cents`: integer amount in the smallest currency unit.
+- `original_purchase_price_cents`: optional integer amount in the smallest currency unit. Defaults to `0`.
+- `selling_price_cents`: optional integer amount in the smallest currency unit. Defaults to `0`.
 - `currency`: three-letter uppercase currency code. Default is `USD`.
 - `status`: inventory status.
 - `notes`: private seller notes.

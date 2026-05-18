@@ -113,12 +113,23 @@ const statusLabels: Record<InventoryStatus, string> = {
                 <dd>{{ item.category || 'Uncategorized' }}</dd>
               </div>
               <div>
-                <dt>Price</dt>
-                <dd>{{ item.price_cents / 100 | currency: item.currency }}</dd>
+                <dt>Original price</dt>
+                <dd>
+                  {{
+                    item.original_purchase_price_cents / 100
+                      | currency: item.currency
+                  }}
+                </dd>
               </div>
               <div>
                 <dt>Size</dt>
                 <dd>{{ item.size || 'Not set' }}</dd>
+              </div>
+              <div>
+                <dt>Selling price</dt>
+                <dd>
+                  {{ item.selling_price_cents / 100 | currency: item.currency }}
+                </dd>
               </div>
               <div>
                 <dt>Updated</dt>

@@ -35,14 +35,16 @@ describe('InventoryPageComponent', () => {
         title: 'Denim jacket',
         category: 'Clothing',
         status: 'draft',
-        price_cents: 3200
+        original_purchase_price_cents: 1800,
+        selling_price_cents: 3200
       }),
       itemFixture({
         id: 'item-2',
         title: 'Leather boots',
         category: 'Shoes',
         status: 'ready_to_list',
-        price_cents: 4200
+        original_purchase_price_cents: 2400,
+        selling_price_cents: 4200
       })
     ]);
     fixture.detectChanges();
@@ -50,6 +52,9 @@ describe('InventoryPageComponent', () => {
     const text = fixture.nativeElement.textContent;
     expect(text).toContain('Denim jacket');
     expect(text).toContain('Leather boots');
+    expect(text).toContain('Original price');
+    expect(text).toContain('$18.00');
+    expect(text).toContain('Selling price');
     expect(text).toContain('$32.00');
     expect(text).toContain('2 items');
     expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(2);
@@ -135,7 +140,8 @@ function itemFixture(overrides: Record<string, unknown> = {}) {
     category: 'Clothing',
     size: 'M',
     condition: 'Good',
-    price_cents: 3200,
+    original_purchase_price_cents: 1800,
+    selling_price_cents: 3200,
     currency: 'USD',
     status: 'draft',
     notes: 'Steam before photos',

@@ -16,19 +16,22 @@ func TestItemSuite(t *testing.T) {
 
 func (s *ItemSuite) TestNewDraftItemUsesFlexibleCategoryAndMoney() {
 	item := NewDraftItem(NewItemInput{
-		Title:       "Vintage denim jacket",
-		Description: "Medium wash denim jacket",
-		Category:    "90s outerwear",
-		Size:        "M",
-		Condition:   "Good",
-		PriceCents:  2500,
-		Currency:    "USD",
-		Notes:       "Check left sleeve before listing",
+		Title:                      "Vintage denim jacket",
+		Description:                "Medium wash denim jacket",
+		Category:                   "90s outerwear",
+		Size:                       "M",
+		Condition:                  "Good",
+		OriginalPurchasePriceCents: 1200,
+		SellingPriceCents:          2500,
+		Currency:                   "USD",
+		Notes:                      "Check left sleeve before listing",
 	})
 
 	s.Equal("90s outerwear", item.Category)
-	s.Equal(int64(2500), item.Price.AmountCents)
-	s.Equal("USD", item.Price.Currency)
+	s.Equal(int64(1200), item.OriginalPurchasePrice.AmountCents)
+	s.Equal(int64(2500), item.SellingPrice.AmountCents)
+	s.Equal("USD", item.OriginalPurchasePrice.Currency)
+	s.Equal("USD", item.SellingPrice.Currency)
 	s.Equal(InventoryStatusDraft, item.Status)
 }
 
