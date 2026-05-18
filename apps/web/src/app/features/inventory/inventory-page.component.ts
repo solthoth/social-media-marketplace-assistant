@@ -52,9 +52,6 @@ const statusLabels: Record<InventoryStatus, string> = {
           {{ filteredItems().length }}
           {{ filteredItems().length === 1 ? 'item' : 'items' }}
         </div>
-        <a matButton="filled" class="primary-action" routerLink="/items/new">
-          New item
-        </a>
       </div>
 
       <div class="inventory-toolbar" aria-label="Inventory filters">
