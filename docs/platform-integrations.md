@@ -21,4 +21,3 @@ Each platform adapter should expose a small capability-oriented interface, such 
 - Fetch publish status where supported.
 
 Unsupported capabilities should be explicit so the frontend can communicate limitations clearly.
-

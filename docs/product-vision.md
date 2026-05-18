@@ -24,4 +24,3 @@ Create a central inventory application where the seller captures each item once 
 - Inventory list with draft, listed, sold, and archived states.
 - Backend API with health checks and future item endpoints.
 - Integration abstraction designed for official platform APIs.
-

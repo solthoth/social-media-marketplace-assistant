@@ -9,7 +9,8 @@ import { Component } from '@angular/core';
         <p class="eyebrow">Inventory first</p>
         <h1>Marketplace Assistant</h1>
         <p class="summary">
-          Capture items once, keep inventory organized, and prepare listings for connected sales channels.
+          Capture items once, keep inventory organized, and prepare listings for
+          connected sales channels.
         </p>
       </section>
 
@@ -27,4 +28,3 @@ import { Component } from '@angular/core';
   `
 })
 export class AppComponent {}
-

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ng serve --host 0.0.0.0",
     "build": "ng build",
-    "test": "ng test"
+    "test": "ng test --watch=false"
   },
   "dependencies": {
     "@angular/common": "^21.0.0",
@@ -23,7 +23,8 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "jsdom": "^27.3.0",
+    "vitest": "^4.0.15",
     "typescript": "~5.9.0"
   }
 }
-

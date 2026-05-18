@@ -9,4 +9,3 @@ Recommended reading order:
 3. [architecture.md](architecture.md)
 4. [development.md](development.md)
 5. [platform-integrations.md](platform-integrations.md)
-
