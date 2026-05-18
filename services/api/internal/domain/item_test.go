@@ -1,8 +1,20 @@
 package domain
 
-import "testing"
+import (
+	"testing"
 
-func TestNewDraftItemUsesFlexibleCategoryAndMoney(t *testing.T) {
+	"github.com/stretchr/testify/suite"
+)
+
+type ItemSuite struct {
+	suite.Suite
+}
+
+func TestItemSuite(t *testing.T) {
+	suite.Run(t, new(ItemSuite))
+}
+
+func (s *ItemSuite) TestNewDraftItemUsesFlexibleCategoryAndMoney() {
 	item := NewDraftItem(NewItemInput{
 		Title:       "Vintage denim jacket",
 		Description: "Medium wash denim jacket",
@@ -14,21 +26,13 @@ func TestNewDraftItemUsesFlexibleCategoryAndMoney(t *testing.T) {
 		Notes:       "Check left sleeve before listing",
 	})
 
-	if item.Category != "90s outerwear" {
-		t.Fatalf("expected flexible category text, got %q", item.Category)
-	}
-	if item.Price.AmountCents != 2500 {
-		t.Fatalf("expected price in cents, got %d", item.Price.AmountCents)
-	}
-	if item.Price.Currency != "USD" {
-		t.Fatalf("expected USD currency, got %q", item.Price.Currency)
-	}
-	if item.Status != InventoryStatusDraft {
-		t.Fatalf("expected draft status, got %q", item.Status)
-	}
+	s.Equal("90s outerwear", item.Category)
+	s.Equal(int64(2500), item.Price.AmountCents)
+	s.Equal("USD", item.Price.Currency)
+	s.Equal(InventoryStatusDraft, item.Status)
 }
 
-func TestInventoryStatusValidation(t *testing.T) {
+func (s *ItemSuite) TestInventoryStatusValidation() {
 	valid := []InventoryStatus{
 		InventoryStatusDraft,
 		InventoryStatusReadyToList,
@@ -38,26 +42,14 @@ func TestInventoryStatusValidation(t *testing.T) {
 	}
 
 	for _, status := range valid {
-		if !status.IsValid() {
-			t.Fatalf("expected %q to be valid", status)
-		}
+		s.True(status.IsValid(), "expected %q to be valid", status)
 	}
 
-	if InventoryStatus("deleted").IsValid() {
-		t.Fatal("expected unknown status to be invalid")
-	}
+	s.False(InventoryStatus("deleted").IsValid())
 }
 
-func TestMoneyValidation(t *testing.T) {
-	if err := (Money{AmountCents: 0, Currency: "USD"}).Validate(); err != nil {
-		t.Fatalf("expected zero-dollar price to be valid: %v", err)
-	}
-
-	if err := (Money{AmountCents: -1, Currency: "USD"}).Validate(); err == nil {
-		t.Fatal("expected negative price to be invalid")
-	}
-
-	if err := (Money{AmountCents: 100, Currency: "usd"}).Validate(); err == nil {
-		t.Fatal("expected lowercase currency to be invalid")
-	}
+func (s *ItemSuite) TestMoneyValidation() {
+	s.NoError((Money{AmountCents: 0, Currency: "USD"}).Validate())
+	s.Error((Money{AmountCents: -1, Currency: "USD"}).Validate())
+	s.Error((Money{AmountCents: 100, Currency: "usd"}).Validate())
 }

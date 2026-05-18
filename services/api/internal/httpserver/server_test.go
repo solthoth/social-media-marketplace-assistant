@@ -5,27 +5,31 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
-func TestHealthz(t *testing.T) {
+type ServerSuite struct {
+	suite.Suite
+}
+
+func TestServerSuite(t *testing.T) {
+	suite.Run(t, new(ServerSuite))
+}
+
+func (s *ServerSuite) TestHealthz() {
 	request := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	response := httptest.NewRecorder()
 
 	NewRouter().ServeHTTP(response, request)
 
-	if response.Code != http.StatusOK {
-		t.Fatalf("expected status %d, got %d", http.StatusOK, response.Code)
-	}
+	s.Equal(http.StatusOK, response.Code)
 
 	var body healthResponse
 	if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
-		t.Fatalf("decode response: %v", err)
+		s.T().Fatalf("decode response: %v", err)
 	}
 
-	if body.Status != "ok" {
-		t.Fatalf("expected healthy status, got %q", body.Status)
-	}
-	if body.Service == "" {
-		t.Fatal("expected service name")
-	}
+	s.Equal("ok", body.Status)
+	s.NotEmpty(body.Service)
 }
