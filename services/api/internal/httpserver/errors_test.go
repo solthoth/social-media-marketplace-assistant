@@ -5,26 +5,32 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestWriteErrorUsesConsistentShape(t *testing.T) {
+type ErrorSuite struct {
+	suite.Suite
+}
+
+func TestErrorSuite(t *testing.T) {
+	suite.Run(t, new(ErrorSuite))
+}
+
+func (s *ErrorSuite) TestWriteErrorUsesConsistentShape() {
 	response := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(response)
 
-	writeError(response, NewAPIError(http.StatusBadRequest, "invalid_request", "title is required"))
+	writeError(ctx, NewAPIError(http.StatusBadRequest, "invalid_request", "title is required"))
 
-	if response.Code != http.StatusBadRequest {
-		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, response.Code)
-	}
+	s.Equal(http.StatusBadRequest, response.Code)
 
 	var body errorResponse
 	if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
-		t.Fatalf("decode response: %v", err)
+		s.T().Fatalf("decode response: %v", err)
 	}
 
-	if body.Error.Code != "invalid_request" {
-		t.Fatalf("expected error code, got %q", body.Error.Code)
-	}
-	if body.Error.Message != "title is required" {
-		t.Fatalf("expected error message, got %q", body.Error.Message)
-	}
+	s.Equal("invalid_request", body.Error.Code)
+	s.Equal("title is required", body.Error.Message)
 }

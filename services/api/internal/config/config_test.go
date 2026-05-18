@@ -1,21 +1,29 @@
 package config
 
-import "testing"
+import (
+	"testing"
 
-func TestLoadUsesDefaults(t *testing.T) {
+	"github.com/stretchr/testify/suite"
+)
+
+type ConfigSuite struct {
+	suite.Suite
+}
+
+func TestConfigSuite(t *testing.T) {
+	suite.Run(t, new(ConfigSuite))
+}
+
+func (s *ConfigSuite) TestLoadUsesDefaults() {
 	cfg := Load(func(string) string {
 		return ""
 	})
 
-	if cfg.Port != "8080" {
-		t.Fatalf("expected default port, got %q", cfg.Port)
-	}
-	if cfg.DatabasePath != "data/app.db" {
-		t.Fatalf("expected default database path, got %q", cfg.DatabasePath)
-	}
+	s.Equal("8080", cfg.Port)
+	s.Equal("data/app.db", cfg.DatabasePath)
 }
 
-func TestLoadUsesEnvironmentOverrides(t *testing.T) {
+func (s *ConfigSuite) TestLoadUsesEnvironmentOverrides() {
 	values := map[string]string{
 		"PORT":          "9090",
 		"DATABASE_PATH": "/tmp/marketplace.db",
@@ -25,10 +33,6 @@ func TestLoadUsesEnvironmentOverrides(t *testing.T) {
 		return values[key]
 	})
 
-	if cfg.Port != "9090" {
-		t.Fatalf("expected overridden port, got %q", cfg.Port)
-	}
-	if cfg.DatabasePath != "/tmp/marketplace.db" {
-		t.Fatalf("expected overridden database path, got %q", cfg.DatabasePath)
-	}
+	s.Equal("9090", cfg.Port)
+	s.Equal("/tmp/marketplace.db", cfg.DatabasePath)
 }

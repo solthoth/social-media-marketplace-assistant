@@ -1,6 +1,6 @@
 package httpserver
 
-import "net/http"
+import "github.com/gin-gonic/gin"
 
 type APIError struct {
 	Status  int
@@ -25,8 +25,8 @@ func NewAPIError(status int, code string, message string) APIError {
 	}
 }
 
-func writeError(w http.ResponseWriter, err APIError) {
-	writeJSON(w, err.Status, errorResponse{
+func writeError(c *gin.Context, err APIError) {
+	c.JSON(err.Status, errorResponse{
 		Error: errorDetail{
 			Code:    err.Code,
 			Message: err.Message,

@@ -5,19 +5,31 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/stretchr/testify/suite"
 	_ "modernc.org/sqlite"
 )
 
-func TestApplyMigrationsCreatesInitialTables(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
-	if err != nil {
-		t.Fatalf("open sqlite: %v", err)
-	}
-	defer db.Close()
+type MigrationSuite struct {
+	suite.Suite
+	db *sql.DB
+}
 
-	if err := ApplyMigrations(context.Background(), db); err != nil {
-		t.Fatalf("apply migrations: %v", err)
-	}
+func TestMigrationSuite(t *testing.T) {
+	suite.Run(t, new(MigrationSuite))
+}
+
+func (s *MigrationSuite) SetupTest() {
+	db, err := sql.Open("sqlite", ":memory:")
+	s.Require().NoError(err)
+	s.db = db
+}
+
+func (s *MigrationSuite) TearDownTest() {
+	s.Require().NoError(s.db.Close())
+}
+
+func (s *MigrationSuite) TestApplyMigrationsCreatesInitialTables() {
+	s.Require().NoError(ApplyMigrations(context.Background(), s.db))
 
 	expectedTables := []string{
 		"schema_migrations",
@@ -31,13 +43,11 @@ func TestApplyMigrationsCreatesInitialTables(t *testing.T) {
 
 	for _, table := range expectedTables {
 		var name string
-		err := db.QueryRowContext(
+		err := s.db.QueryRowContext(
 			context.Background(),
 			"select name from sqlite_master where type = 'table' and name = ?",
 			table,
 		).Scan(&name)
-		if err != nil {
-			t.Fatalf("expected table %q to exist: %v", table, err)
-		}
+		s.Require().NoError(err, "expected table %q to exist", table)
 	}
 }

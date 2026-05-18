@@ -1,9 +1,10 @@
 package httpserver
 
 import (
-	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type healthResponse struct {
@@ -13,31 +14,27 @@ type healthResponse struct {
 }
 
 func NewRouter() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", healthz)
-	mux.HandleFunc("GET /", root)
-	return mux
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
+
+	router.GET("/healthz", healthz)
+	router.GET("/", root)
+
+	return router
 }
 
-func root(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]string{
+func root(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
 		"service": "social-media-marketplace-assistant-api",
 		"status":  "ok",
 	})
 }
 
-func healthz(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, healthResponse{
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusOK, healthResponse{
 		Status:  "ok",
 		Service: "social-media-marketplace-assistant-api",
 		Time:    time.Now().UTC().Format(time.RFC3339),
 	})
-}
-
-func writeJSON(w http.ResponseWriter, status int, payload any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		http.Error(w, "failed to encode response", http.StatusInternalServerError)
-	}
 }
