@@ -17,6 +17,7 @@ coverage/
 bin/
 *.test
 *.out
+data/
 
 # Local env
 .env

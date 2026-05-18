@@ -1,0 +1,149 @@
+package domain
+
+import (
+	"errors"
+	"strings"
+	"time"
+)
+
+type InventoryStatus string
+
+const (
+	InventoryStatusDraft       InventoryStatus = "draft"
+	InventoryStatusReadyToList InventoryStatus = "ready_to_list"
+	InventoryStatusListed      InventoryStatus = "listed"
+	InventoryStatusSold        InventoryStatus = "sold"
+	InventoryStatusArchived    InventoryStatus = "archived"
+)
+
+type ListingStatus string
+
+const (
+	ListingStatusDraft     ListingStatus = "draft"
+	ListingStatusPublished ListingStatus = "published"
+	ListingStatusFailed    ListingStatus = "failed"
+	ListingStatusRemoved   ListingStatus = "removed"
+)
+
+type Money struct {
+	AmountCents int64
+	Currency    string
+}
+
+type Item struct {
+	ID          string
+	Title       string
+	Description string
+	Category    string
+	Size        string
+	Condition   string
+	Price       Money
+	Status      InventoryStatus
+	Notes       string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type ItemPhoto struct {
+	ID        string
+	ItemID    string
+	StorageID string
+	Filename  string
+	MimeType  string
+	SortOrder int
+	IsPrimary bool
+	CreatedAt time.Time
+}
+
+type ConnectedAccount struct {
+	ID              string
+	Platform        string
+	DisplayName     string
+	Status          string
+	PermissionScope string
+	LastValidatedAt *time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}
+
+type Listing struct {
+	ID                 string
+	ItemID             string
+	ConnectedAccountID string
+	ExternalID         string
+	Status             ListingStatus
+	PublishedAt        *time.Time
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+}
+
+type ListingAttempt struct {
+	ID        string
+	ListingID string
+	Status    ListingStatus
+	Message   string
+	CreatedAt time.Time
+}
+
+type Sale struct {
+	ID        string
+	ItemID    string
+	SalePrice Money
+	SoldAt    time.Time
+	Platform  string
+	AccountID string
+	CreatedAt time.Time
+}
+
+type NewItemInput struct {
+	Title       string
+	Description string
+	Category    string
+	Size        string
+	Condition   string
+	PriceCents  int64
+	Currency    string
+	Notes       string
+}
+
+func NewDraftItem(input NewItemInput) Item {
+	now := time.Now().UTC()
+	return Item{
+		Title:       strings.TrimSpace(input.Title),
+		Description: strings.TrimSpace(input.Description),
+		Category:    strings.TrimSpace(input.Category),
+		Size:        strings.TrimSpace(input.Size),
+		Condition:   strings.TrimSpace(input.Condition),
+		Price: Money{
+			AmountCents: input.PriceCents,
+			Currency:    strings.ToUpper(strings.TrimSpace(input.Currency)),
+		},
+		Status:    InventoryStatusDraft,
+		Notes:     strings.TrimSpace(input.Notes),
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+}
+
+func (s InventoryStatus) IsValid() bool {
+	switch s {
+	case InventoryStatusDraft,
+		InventoryStatusReadyToList,
+		InventoryStatusListed,
+		InventoryStatusSold,
+		InventoryStatusArchived:
+		return true
+	default:
+		return false
+	}
+}
+
+func (m Money) Validate() error {
+	if m.AmountCents < 0 {
+		return errors.New("amount cents must be greater than or equal to zero")
+	}
+	if len(m.Currency) != 3 || m.Currency != strings.ToUpper(m.Currency) {
+		return errors.New("currency must be a three-letter uppercase code")
+	}
+	return nil
+}
