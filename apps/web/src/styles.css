@@ -62,6 +62,148 @@ nav a {
   gap: 12px;
 }
 
+.inventory-page {
+  display: grid;
+  gap: 22px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: end;
+}
+
+.inventory-count {
+  min-width: 96px;
+  padding: 12px 14px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172026;
+  font-weight: 800;
+  text-align: center;
+}
+
+.inventory-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px);
+  gap: 14px;
+  align-items: end;
+}
+
+.inventory-toolbar label {
+  display: grid;
+  gap: 7px;
+  color: #52616b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.inventory-toolbar input,
+.inventory-toolbar select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #bcc8ce;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172026;
+  font: inherit;
+}
+
+.notice,
+.empty-state {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #52616b;
+}
+
+.notice.error {
+  border-color: #d59d95;
+  color: #8a2d21;
+  background: #fff7f5;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.inventory-card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.card-heading h2,
+.empty-state h2 {
+  margin: 0;
+  color: #172026;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.status-badge {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e7f0ef;
+  color: #2f6f73;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.item-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.item-facts div {
+  min-width: 0;
+}
+
+.item-facts dt {
+  color: #687782;
+  font-size: 0.78rem;
+}
+
+.item-facts dd {
+  margin: 2px 0 0;
+  color: #172026;
+  font-weight: 700;
+}
+
+.item-description,
+.item-notes,
+.empty-state p {
+  margin: 0;
+  color: #52616b;
+  line-height: 1.5;
+}
+
+.item-notes {
+  padding-top: 10px;
+  border-top: 1px solid #edf1f3;
+}
+
 .eyebrow {
   margin: 0;
   color: #2f6f73;
@@ -117,6 +259,15 @@ strong {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .inventory-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .inventory-toolbar {
+    grid-template-columns: 1fr;
   }
 
   .status-panel {

@@ -35,7 +35,9 @@ make run-web
 
 The Angular dev server should be available at `http://localhost:4200`.
 
-The frontend calls API routes through the `/api` path. Local proxy configuration will be added when the first backend feature endpoint is implemented.
+The frontend calls API routes through the `/api` path. The Angular development server proxies `/api` to the Go API at `http://localhost:8080`.
+
+The inventory page at `/items` loads item records from `GET /api/items`, supports status filtering, and filters the loaded result set by title, category, or notes.
 
 ## Git Hooks
 
