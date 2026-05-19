@@ -161,6 +161,12 @@ nav a {
   gap: 14px;
 }
 
+.inventory-card mat-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .item-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -11,16 +11,9 @@ import {
   InventoryItem,
   InventoryStatus
 } from '../../core/api-client.service';
+import { inventoryStatusLabels } from '../../core/status-workflow';
 
 type InventoryStatusFilter = InventoryStatus | 'all';
-
-const statusLabels: Record<InventoryStatus, string> = {
-  draft: 'Draft',
-  ready_to_list: 'Ready to list',
-  listed: 'Listed',
-  sold: 'Sold',
-  archived: 'Archived'
-};
 
 @Component({
   selector: 'smm-inventory-page',
@@ -204,7 +197,7 @@ export class InventoryPageComponent implements OnInit {
   }
 
   protected statusLabel(status: InventoryStatus): string {
-    return statusLabels[status];
+    return inventoryStatusLabels[status];
   }
 
   private loadItems(): void {
