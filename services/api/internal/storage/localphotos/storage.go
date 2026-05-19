@@ -28,7 +28,7 @@ func (s Storage) Save(ctx context.Context, object photos.StorageObject, content 
 		return photos.StoredObject{}, err
 	}
 
-	directory, err := s.storageDirectory(object.StorageID)
+	directory, err := storageRelativeDirectory(object.StorageID)
 	if err != nil {
 		return photos.StoredObject{}, err
 	}
@@ -36,11 +36,17 @@ func (s Storage) Save(ctx context.Context, object photos.StorageObject, content 
 	if err != nil {
 		return photos.StoredObject{}, err
 	}
-	if err := os.MkdirAll(directory, 0o750); err != nil {
+	root, err := s.openRoot()
+	if err != nil {
+		return photos.StoredObject{}, err
+	}
+	defer root.Close()
+
+	if err := root.MkdirAll(directory, 0o750); err != nil {
 		return photos.StoredObject{}, err
 	}
 
-	file, err := os.Create(filepath.Join(directory, filename))
+	file, err := root.Create(filepath.Join(directory, filename))
 	if err != nil {
 		return photos.StoredObject{}, err
 	}
@@ -57,19 +63,25 @@ func (s Storage) Open(ctx context.Context, storageID string, variant domain.Phot
 	if err := ctx.Err(); err != nil {
 		return nil, photos.ObjectInfo{}, err
 	}
-	directory, err := s.storageDirectory(storageID)
+	directory, err := storageRelativeDirectory(storageID)
 	if err != nil {
 		return nil, photos.ObjectInfo{}, err
 	}
-	path, err := findVariantPath(directory, variant)
+	root, err := s.openRoot()
 	if err != nil {
-		path, err = findVariantPath(directory, domain.PhotoVariantOriginal)
+		return nil, photos.ObjectInfo{}, err
+	}
+	defer root.Close()
+
+	filename, err := findVariantFilename(root, directory, variant)
+	if err != nil {
+		filename, err = findVariantFilename(root, directory, domain.PhotoVariantOriginal)
 		if err != nil {
 			return nil, photos.ObjectInfo{}, err
 		}
 	}
 
-	file, err := os.Open(path)
+	file, err := root.Open(filepath.Join(directory, filename))
 	if err != nil {
 		return nil, photos.ObjectInfo{}, err
 	}
@@ -79,7 +91,7 @@ func (s Storage) Open(ctx context.Context, storageID string, variant domain.Phot
 		return nil, photos.ObjectInfo{}, err
 	}
 	return file, photos.ObjectInfo{
-		ContentType: contentTypeForExtension(filepath.Ext(path)),
+		ContentType: contentTypeForExtension(filepath.Ext(filename)),
 		SizeBytes:   stat.Size(),
 	}, nil
 }
@@ -88,35 +100,34 @@ func (s Storage) Delete(ctx context.Context, storageID string) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	directory, err := s.storageDirectory(storageID)
+	directory, err := storageRelativeDirectory(storageID)
 	if err != nil {
 		return err
 	}
-	if err := os.RemoveAll(directory); err != nil {
+	root, err := s.openRoot()
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+
+	if err := root.RemoveAll(directory); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s Storage) storageDirectory(storageID string) (string, error) {
+func (s Storage) openRoot() (*os.Root, error) {
+	if err := os.MkdirAll(s.root, 0o750); err != nil {
+		return nil, err
+	}
+	return os.OpenRoot(s.root)
+}
+
+func storageRelativeDirectory(storageID string) (string, error) {
 	if !isSafeStorageID(storageID) {
 		return "", photos.ErrInvalidPhoto
 	}
-
-	root, err := filepath.Abs(s.root)
-	if err != nil {
-		return "", err
-	}
-	parts := strings.Split(storageID, "/")
-	directory := filepath.Join(append([]string{root}, parts...)...)
-	relative, err := filepath.Rel(root, directory)
-	if err != nil {
-		return "", err
-	}
-	if relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-		return "", photos.ErrInvalidPhoto
-	}
-	return directory, nil
+	return filepath.Join(strings.Split(storageID, "/")...), nil
 }
 
 func isSafeStorageID(storageID string) bool {
@@ -139,14 +150,14 @@ func variantFilename(variant domain.PhotoVariant, extension string) (string, err
 	return string(variant) + extension, nil
 }
 
-func findVariantPath(directory string, variant domain.PhotoVariant) (string, error) {
+func findVariantFilename(root *os.Root, directory string, variant domain.PhotoVariant) (string, error) {
 	if !variant.IsValid() {
 		return "", photos.ErrInvalidPhoto
 	}
 	for _, extension := range []string{".jpg", ".png", ".webp"} {
-		candidate := filepath.Join(directory, string(variant)+extension)
-		if _, err := os.Stat(candidate); err == nil {
-			return candidate, nil
+		filename := string(variant) + extension
+		if _, err := root.Stat(filepath.Join(directory, filename)); err == nil {
+			return filename, nil
 		}
 	}
 	return "", photos.ErrPhotoNotFound
