@@ -75,6 +75,10 @@ pre-commit install --hook-type pre-commit --hook-type commit-msg
 
 The `pre-commit` hook runs the same core quality gates as GitHub Actions. The `commit-msg` hook verifies conventional-changelog commit messages.
 
+## Dependency Updates
+
+Dependabot is configured in `.github/dependabot.yml` to check npm workspaces, Go modules, GitHub Actions, Dockerfiles, and Docker Compose weekly on Monday mornings Pacific time. Dependency update pull requests use conventional commit prefixes so commitlint can validate them.
+
 ## Testing
 
 Run all tests:
