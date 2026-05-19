@@ -16,6 +16,7 @@ WORKDIR /app
 
 ENV PORT=8080
 ENV DATABASE_PATH=/data/app.db
+ENV PHOTO_STORAGE_PATH=/data/photos
 
 RUN mkdir -p /data && chown -R app:app /data
 

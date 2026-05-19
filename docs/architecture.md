@@ -36,12 +36,19 @@ Initial package boundaries:
 - `internal/httpserver`: HTTP routing and response helpers.
 - `internal/items`: item service boundary.
 - `internal/storage/sqlite`: SQLite connection and migrations.
+- `internal/storage/localphotos`: future local filesystem photo storage adapter.
 
 ## Persistence
 
 The first persistence target is SQLite using a pure Go driver. This keeps local development and CI simple while the app is private and early-stage.
 
 Persistence should stay behind repository interfaces so a future Postgres migration does not force handlers or frontend contracts to change.
+
+## Photo Storage
+
+Photo bytes are stored outside SQLite. The MVP storage target is the local filesystem, configured by `PHOTO_STORAGE_PATH` and defaulting to `data/photos`. The backend should expose photo content through API routes so the frontend does not depend on local paths or future cloud storage details.
+
+Photo storage should sit behind an internal interface so Azure, AWS, or another object/block storage provider can replace the local adapter later. See [photo-storage.md](photo-storage.md) for the detailed design.
 
 ## Integration Boundary
 

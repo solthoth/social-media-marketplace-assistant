@@ -21,12 +21,14 @@ func (s *ConfigSuite) TestLoadUsesDefaults() {
 
 	s.Equal("8080", cfg.Port)
 	s.Equal("data/app.db", cfg.DatabasePath)
+	s.Equal("data/photos", cfg.PhotoStoragePath)
 }
 
 func (s *ConfigSuite) TestLoadUsesEnvironmentOverrides() {
 	values := map[string]string{
-		"PORT":          "9090",
-		"DATABASE_PATH": "/tmp/marketplace.db",
+		"PORT":               "9090",
+		"DATABASE_PATH":      "/tmp/marketplace.db",
+		"PHOTO_STORAGE_PATH": "/tmp/marketplace-photos",
 	}
 
 	cfg := Load(func(key string) string {
@@ -35,4 +37,5 @@ func (s *ConfigSuite) TestLoadUsesEnvironmentOverrides() {
 
 	s.Equal("9090", cfg.Port)
 	s.Equal("/tmp/marketplace.db", cfg.DatabasePath)
+	s.Equal("/tmp/marketplace-photos", cfg.PhotoStoragePath)
 }

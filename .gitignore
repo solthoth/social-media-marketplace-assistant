@@ -19,6 +19,7 @@ test-results/
 bin/
 *.test
 *.out
+data/photos/
 data/
 
 # Local env

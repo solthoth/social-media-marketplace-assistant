@@ -43,6 +43,8 @@ Allowed status transitions:
 
 An item photo references media stored by the application.
 
+Photo bytes are stored outside SQLite. The `item_photos` table stores metadata and an opaque `storage_id` that the backend storage adapter can resolve. See [photo-storage.md](photo-storage.md) for the local filesystem design and future cloud storage boundary.
+
 Initial fields:
 
 - `id`
