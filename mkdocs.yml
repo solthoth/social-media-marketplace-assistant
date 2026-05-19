@@ -6,6 +6,7 @@ nav:
   - Product Vision: product-vision.md
   - Architecture: architecture.md
   - MVP Data Model: data-model.md
+  - Photo Storage: photo-storage.md
   - API: api.md
   - Initial Task List: task-list.md
   - Development: development.md

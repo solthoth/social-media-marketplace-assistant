@@ -12,6 +12,7 @@ Environment variables:
 
 - `PORT`: API port. Defaults to `8080`.
 - `DATABASE_PATH`: SQLite database path. Defaults to `data/app.db`.
+- `PHOTO_STORAGE_PATH`: local item photo storage path. Defaults to `data/photos`.
 
 Health endpoint:
 
@@ -130,6 +131,10 @@ npm run verify
 ## Data Model
 
 See [data-model.md](data-model.md) for the current MVP entities, statuses, and persistence assumptions.
+
+## Photo Storage
+
+See [photo-storage.md](photo-storage.md) for local photo storage, planned image variants, and the future cloud storage adapter boundary.
 
 ## API
 

@@ -6,6 +6,7 @@ services:
     environment:
       PORT: '8080'
       DATABASE_PATH: /data/app.db
+      PHOTO_STORAGE_PATH: /data/photos
     ports:
       - '8080:8080'
     volumes:
