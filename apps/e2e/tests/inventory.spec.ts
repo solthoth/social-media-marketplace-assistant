@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { writeFileSync } from 'node:fs';
 
 const apiUrl = 'http://127.0.0.1:8080';
 
@@ -207,6 +208,57 @@ test('changes item status through the edit workflow controls', async ({
   await expect(statusBadge).toHaveText('Draft');
 });
 
+test('uploads, previews, reorders, marks primary, and removes item photos', async ({
+  page,
+  request
+}, testInfo) => {
+  const title = `E2E photo blouse ${Date.now()}`;
+  const create = await request.post(`${apiUrl}/items`, {
+    data: {
+      title,
+      category: 'Clothing',
+      selling_price_cents: 2800,
+      currency: 'USD'
+    }
+  });
+  expect(create.ok()).toBeTruthy();
+  const item = await create.json();
+
+  const frontPhoto = testInfo.outputPath('front.png');
+  const backPhoto = testInfo.outputPath('back.png');
+  writeFileSync(frontPhoto, Buffer.from(pngBytes));
+  writeFileSync(backPhoto, Buffer.from(pngBytes));
+
+  await page.goto(`/items/${item.id}/edit`);
+  await expect(page.getByRole('heading', { name: 'Edit item' })).toBeVisible();
+  await expect(page.getByText('No photos yet')).toBeVisible();
+
+  await page.getByTestId('item-photo-input').setInputFiles(frontPhoto);
+  const frontCard = page
+    .locator('.photo-card')
+    .filter({ hasText: 'front.png' });
+  await expect(frontCard).toBeVisible();
+  await expect(frontCard.getByRole('img', { name: 'front.png' })).toBeVisible();
+  await expect(frontCard.locator('.status-badge')).toHaveText('Primary');
+
+  await page.getByTestId('item-photo-input').setInputFiles(backPhoto);
+  const backCard = page.locator('.photo-card').filter({ hasText: 'back.png' });
+  await expect(backCard).toBeVisible();
+
+  await backCard.getByRole('button', { name: 'Primary' }).click();
+  await expect(backCard.locator('.status-badge')).toHaveText('Primary');
+  await expect(frontCard.locator('.status-badge')).toHaveCount(0);
+
+  await backCard.getByRole('button', { name: 'Up' }).click();
+  await expect(
+    page.locator('[data-testid="photo-filename"]').first()
+  ).toHaveText('back.png');
+
+  await frontCard.getByRole('button', { name: 'Remove' }).click();
+  await expect(frontCard).toHaveCount(0);
+  await expect(backCard).toBeVisible();
+});
+
 async function changeStatusFromEditPage(
   page: Page,
   card: Locator,
@@ -217,3 +269,12 @@ async function changeStatusFromEditPage(
   await page.getByTestId('save-draft').click();
   await expect(page).toHaveURL(/\/items$/);
 }
+
+const pngBytes = [
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
+  0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02,
+  0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44,
+  0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00, 0x00, 0x03, 0x01, 0x01,
+  0x00, 0x18, 0xdd, 0x8d, 0xb0, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44,
+  0xae, 0x42, 0x60, 0x82
+];

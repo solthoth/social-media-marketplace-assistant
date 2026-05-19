@@ -42,6 +42,8 @@ The inventory page at `/items` loads item records from `GET /api/items`, support
 
 Use `/items/new` to capture a new draft item. Use `/items/{id}/edit` to edit an existing item from the inventory list. The form stores original purchase price and selling price as decimal dollars in the UI and sends integer cents to the API. Existing items move through the status workflow from the edit form.
 
+Photo capture is available from `/items/{id}/edit` after an item exists. The photo UI supports phone camera capture and local image file selection, previews thumbnail content through the API proxy, and lets sellers remove, reorder, and choose the primary photo.
+
 The frontend uses Angular Material components with the Rose/Red prebuilt theme. Prefer Material form fields, buttons, toolbar, and card components for new mobile-facing UI controls so spacing, touch targets, and validation states stay consistent.
 
 ## Docker Compose

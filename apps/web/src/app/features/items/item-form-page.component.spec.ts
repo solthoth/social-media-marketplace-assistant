@@ -73,6 +73,7 @@ describe('ItemFormPageComponent', () => {
     const getRequest = http.expectOne('/api/items/item-1');
     expect(getRequest.request.method).toBe('GET');
     getRequest.flush(itemFixture());
+    http.expectOne('/api/items/item-1/photos').flush({ photos: [] });
     fixture.detectChanges();
 
     const title: HTMLInputElement = fixture.nativeElement.querySelector(
@@ -104,6 +105,7 @@ describe('ItemFormPageComponent', () => {
 
     const getRequest = http.expectOne('/api/items/item-1');
     getRequest.flush(itemFixture({ status: 'ready_to_list' }));
+    http.expectOne('/api/items/item-1/photos').flush({ photos: [] });
     fixture.detectChanges();
 
     const status: HTMLSelectElement = fixture.nativeElement.querySelector(
@@ -129,6 +131,20 @@ describe('ItemFormPageComponent', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/items');
+    http.verify();
+  });
+
+  it('shows photo capture controls while editing an existing item', () => {
+    const { fixture, http } = setup('/items/item-1/edit');
+
+    http.expectOne('/api/items/item-1').flush(itemFixture());
+    http.expectOne('/api/items/item-1/photos').flush({ photos: [] });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Photos');
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="item-photo-input"]')
+    ).not.toBeNull();
     http.verify();
   });
 });

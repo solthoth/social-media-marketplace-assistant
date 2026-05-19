@@ -169,6 +169,81 @@ describe('ApiClientService', () => {
 
     http.verify();
   });
+
+  it('lists item photos', () => {
+    const { client, http } = setup();
+
+    client.listItemPhotos('item-1').subscribe((response) => {
+      expect(response.photos).toHaveLength(1);
+      expect(response.photos[0].filename).toBe('front.png');
+    });
+
+    const request = http.expectOne('/api/items/item-1/photos');
+    expect(request.request.method).toBe('GET');
+    request.flush({ photos: [photoFixture()] });
+
+    http.verify();
+  });
+
+  it('uploads an item photo as multipart form data', () => {
+    const { client, http } = setup();
+    const file = new File(['image-bytes'], 'front.png', { type: 'image/png' });
+
+    client.uploadItemPhoto('item-1', file).subscribe((photo) => {
+      expect(photo.id).toBe('photo-1');
+    });
+
+    const request = http.expectOne('/api/items/item-1/photos');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body instanceof FormData).toBe(true);
+    expect(request.request.body.get('photo')).toBe(file);
+    request.flush(photoFixture());
+
+    http.verify();
+  });
+
+  it('reorders item photos', () => {
+    const { client, http } = setup();
+
+    client.reorderItemPhotos('item-1', ['photo-2', 'photo-1']).subscribe();
+
+    const request = http.expectOne('/api/items/item-1/photos/order');
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({
+      photo_ids: ['photo-2', 'photo-1']
+    });
+    request.flush({
+      photos: [photoFixture({ id: 'photo-2' }), photoFixture()]
+    });
+
+    http.verify();
+  });
+
+  it('sets an item photo as primary', () => {
+    const { client, http } = setup();
+
+    client.setPrimaryItemPhoto('item-1', 'photo-2').subscribe();
+
+    const request = http.expectOne('/api/items/item-1/photos/photo-2/primary');
+    expect(request.request.method).toBe('PATCH');
+    request.flush({
+      photos: [photoFixture({ id: 'photo-2', is_primary: true })]
+    });
+
+    http.verify();
+  });
+
+  it('deletes an item photo', () => {
+    const { client, http } = setup();
+
+    client.deleteItemPhoto('item-1', 'photo-1').subscribe();
+
+    const request = http.expectOne('/api/items/item-1/photos/photo-1');
+    expect(request.request.method).toBe('DELETE');
+    request.flush(null);
+
+    http.verify();
+  });
 });
 
 function itemFixture(overrides: Record<string, unknown> = {}) {
@@ -186,6 +261,24 @@ function itemFixture(overrides: Record<string, unknown> = {}) {
     notes: 'Steam before photos',
     created_at: '2026-05-18T00:00:00Z',
     updated_at: '2026-05-18T00:00:00Z',
+    ...overrides
+  };
+}
+
+function photoFixture(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'photo-1',
+    item_id: 'item-1',
+    filename: 'front.png',
+    mime_type: 'image/png',
+    sort_order: 0,
+    is_primary: true,
+    content_urls: {
+      original: '/items/item-1/photos/photo-1/content?variant=original',
+      medium: '/items/item-1/photos/photo-1/content?variant=medium',
+      thumbnail: '/items/item-1/photos/photo-1/content?variant=thumbnail'
+    },
+    created_at: '2026-05-18T00:00:00Z',
     ...overrides
   };
 }
