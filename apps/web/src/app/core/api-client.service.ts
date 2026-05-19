@@ -17,6 +17,8 @@ export type InventoryStatus =
 
 export type Currency = 'USD';
 
+export type PhotoVariant = 'original' | 'medium' | 'thumbnail';
+
 export interface InventoryItem {
   id: string;
   title: string;
@@ -35,6 +37,21 @@ export interface InventoryItem {
 
 export interface ListItemsResponse {
   items: InventoryItem[];
+}
+
+export interface ItemPhoto {
+  id: string;
+  item_id: string;
+  filename: string;
+  mime_type: string;
+  sort_order: number;
+  is_primary: boolean;
+  content_urls: Record<PhotoVariant, string>;
+  created_at: string;
+}
+
+export interface ListItemPhotosResponse {
+  photos: ItemPhoto[];
 }
 
 export interface SaveInventoryItemRequest {
@@ -82,5 +99,41 @@ export class ApiClientService {
     request: UpdateInventoryItemRequest
   ): Observable<InventoryItem> {
     return this.http.patch<InventoryItem>(`/api/items/${id}`, request);
+  }
+
+  listItemPhotos(itemId: string): Observable<ListItemPhotosResponse> {
+    return this.http.get<ListItemPhotosResponse>(`/api/items/${itemId}/photos`);
+  }
+
+  uploadItemPhoto(itemId: string, file: File): Observable<ItemPhoto> {
+    const body = new FormData();
+    body.append('photo', file);
+    return this.http.post<ItemPhoto>(`/api/items/${itemId}/photos`, body);
+  }
+
+  reorderItemPhotos(
+    itemId: string,
+    photoIds: string[]
+  ): Observable<ListItemPhotosResponse> {
+    return this.http.patch<ListItemPhotosResponse>(
+      `/api/items/${itemId}/photos/order`,
+      {
+        photo_ids: photoIds
+      }
+    );
+  }
+
+  setPrimaryItemPhoto(
+    itemId: string,
+    photoId: string
+  ): Observable<ListItemPhotosResponse> {
+    return this.http.patch<ListItemPhotosResponse>(
+      `/api/items/${itemId}/photos/${photoId}/primary`,
+      {}
+    );
+  }
+
+  deleteItemPhoto(itemId: string, photoId: string): Observable<void> {
+    return this.http.delete<void>(`/api/items/${itemId}/photos/${photoId}`);
   }
 }

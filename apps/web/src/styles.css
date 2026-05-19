@@ -274,6 +274,96 @@ nav a {
   align-items: center;
 }
 
+.photo-manager {
+  display: grid;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.photo-manager-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.photo-manager h2 {
+  margin: 0;
+  color: #172026;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.photo-manager-summary {
+  margin: 6px 0 0;
+  color: #52616b;
+  line-height: 1.5;
+}
+
+.photo-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.photo-card {
+  display: grid;
+  gap: 10px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #edf1f3;
+}
+
+.photo-card mat-card-content {
+  padding-top: 0;
+}
+
+.photo-card mat-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.photo-meta strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.compact-action {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+}
+
+.danger-action {
+  color: #8a2d21;
+}
+
 .eyebrow {
   margin: 0;
   color: #2f6f73;
@@ -355,6 +445,11 @@ strong {
 
   .form-header {
     align-items: start;
+    flex-direction: column;
+  }
+
+  .photo-manager-header {
+    align-items: stretch;
     flex-direction: column;
   }
 

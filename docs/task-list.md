@@ -60,10 +60,10 @@ This roadmap captures the first implementation work needed to move the app from 
     - ~~List item photos.~~
     - ~~Delete and reorder photos.~~
 
-11. Build the photo capture UI.
-    - Use camera and file inputs that work well on phones.
-    - Preview, remove, and reorder photos.
-    - Mark one photo as the primary photo.
+11. ~~Build the photo capture UI.~~
+    - ~~Use camera and file inputs that work well on phones.~~
+    - ~~Preview, remove, and reorder photos.~~
+    - ~~Mark one photo as the primary photo.~~
 
 ## Phase 4: Seller Workflow
 

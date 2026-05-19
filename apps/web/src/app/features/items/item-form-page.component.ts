@@ -17,6 +17,7 @@ import {
   inventoryStatusLabels,
   inventoryStatusOptions
 } from '../../core/status-workflow';
+import { ItemPhotoManagerComponent } from './item-photo-manager.component';
 
 const currencies: Currency[] = ['USD'];
 
@@ -30,6 +31,7 @@ const currencies: Currency[] = ['USD'];
     MatSelectModule,
     NgFor,
     NgIf,
+    ItemPhotoManagerComponent,
     ReactiveFormsModule,
     RouterLink
   ],
@@ -208,6 +210,11 @@ const currencies: Currency[] = ['USD'];
           </a>
         </div>
       </form>
+
+      <smm-item-photo-manager
+        *ngIf="itemId() as editableItemId"
+        [itemId]="editableItemId"
+      />
     </section>
   `
 })
