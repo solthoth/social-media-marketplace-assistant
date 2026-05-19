@@ -13,6 +13,10 @@ Environment variables:
 - `PORT`: API port. Defaults to `8080`.
 - `DATABASE_PATH`: SQLite database path. Defaults to `data/app.db`.
 - `PHOTO_STORAGE_PATH`: local item photo storage path. Defaults to `data/photos`.
+- `AI_ENRICHMENT_ENABLED`: enables AI enrichment routes and worker behavior. Defaults to disabled until implemented.
+- `AI_PROVIDER`: AI provider adapter. Use `fake` for tests and local deterministic development; use `openai` for OpenAI.
+- `AI_MODEL`: model name for the configured AI provider.
+- `OPENAI_API_KEY`: required only when `AI_PROVIDER=openai`.
 
 Health endpoint:
 
@@ -139,6 +143,10 @@ See [data-model.md](data-model.md) for the current MVP entities, statuses, and p
 See [photo-storage.md](photo-storage.md) for local photo storage, planned image variants, and the future cloud storage adapter boundary.
 
 The photo upload API stores supported images in the configured photo storage path and serves them through API content routes. Supported upload formats are JPEG, PNG, and WebP.
+
+## AI Enrichment
+
+See [ai-enrichment.md](ai-enrichment.md) for the planned asynchronous workflow that generates missing item details from title and photos. CI and local tests should use the fake provider so runs stay deterministic and do not require external API calls.
 
 ## API
 

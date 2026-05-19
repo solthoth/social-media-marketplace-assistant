@@ -35,6 +35,8 @@ Initial package boundaries:
 - `internal/config`: environment-backed application configuration.
 - `internal/httpserver`: HTTP routing and response helpers.
 - `internal/items`: item service boundary.
+- `internal/enrichment`: asynchronous AI-assisted item detail generation.
+- `internal/ai`: provider adapters for AI model integrations.
 - `internal/storage/sqlite`: SQLite connection and migrations.
 - `internal/storage/localphotos`: future local filesystem photo storage adapter.
 
@@ -49,6 +51,10 @@ Persistence should stay behind repository interfaces so a future Postgres migrat
 Photo bytes are stored outside SQLite. The MVP storage target is the local filesystem, configured by `PHOTO_STORAGE_PATH` and defaulting to `data/photos`. The backend should expose photo content through API routes so the frontend does not depend on local paths or future cloud storage details.
 
 Photo storage should sit behind an internal interface so Azure, AWS, or another object/block storage provider can replace the local adapter later. See [photo-storage.md](photo-storage.md) for the detailed design.
+
+## AI Enrichment
+
+AI enrichment helps populate missing item details from the item title and photos. The first provider target is OpenAI vision through a provider adapter. The backend should own enrichment jobs, persistence, prompt construction, and provider calls while the frontend starts jobs, polls status, and applies completed suggestions to empty fields. See [ai-enrichment.md](ai-enrichment.md) for the detailed design.
 
 ## Integration Boundary
 

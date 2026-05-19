@@ -67,72 +67,79 @@ This roadmap captures the first implementation work needed to move the app from 
 
 ## Phase 4: Seller Workflow
 
-12. Build a listing preparation view.
+12. Build AI-assisted item detail enrichment.
+    - Generate missing item details from item title and photos.
+    - Use OpenAI vision first behind a replaceable provider interface.
+    - Run enrichment asynchronously and keep job history.
+    - Fill empty fields only in the first implementation.
+    - Leave pricing suggestions for a future feature.
+
+13. Build a listing preparation view.
     - Review title, description, price, photos, and destination readiness before publishing.
 
-13. Build the inventory dashboard.
+14. Build the inventory dashboard.
     - Show counts by status.
     - Show recently updated items.
     - Show items needing attention.
 
-14. Add sale tracking.
+15. Add sale tracking.
     - Mark items sold.
     - Store sale date, sale price, and optional platform or account.
     - Hide sold items from publish queues by default.
 
 ## Phase 5: Platform Integration Readiness
 
-15. Define the integration adapter interface.
+16. Define the integration adapter interface.
     - Include capabilities, validation, publish result, and unsupported feature reporting.
     - Keep adapters platform-compliant and based on official APIs or permitted workflows.
 
-16. Add a manual export adapter.
+17. Add a manual export adapter.
     - Provide a safe copy or export workflow before automating platform publishing.
     - Use this to deliver value without platform API risk.
 
-17. Add the connected account model.
+18. Add the connected account model.
     - Store account metadata, platform, status, permissions, and last validation time.
     - Do not store real credentials until authentication and secret handling are designed.
 
-18. Run the first platform research spike.
+19. Run the first platform research spike.
     - Pick one target platform.
     - Document official API support, terms, rate limits, auth requirements, and publish feasibility.
 
 ## Phase 6: Security And Operations
 
-19. Add authentication.
+20. Add authentication.
     - Start with a simple private household or team login.
     - Leave room for seller, partner, and admin roles later.
 
-20. Add authorization.
+21. Add authorization.
     - Protect item, media, and connected account APIs.
     - Define basic role permissions.
 
-21. Add configuration management.
+22. Add configuration management.
     - Add `.env.example`.
     - Document required environment variables.
     - Add config loading in Go.
 
-22. Add a deployment baseline.
+23. Add a deployment baseline.
     - Containerize the API and web app.
     - Add production build docs.
     - Decide the initial hosting target.
 
-23. Add backup and export.
+24. Add backup and export.
     - Export inventory and photo metadata.
     - Document restore behavior.
     - Support the core goal of keeping inventory portable if an external account becomes unavailable.
 
 ## Phase 7: Quality And Documentation
 
-24. Add API contract documentation.
+25. Add API contract documentation.
     - Add OpenAPI generation or a maintained OpenAPI spec.
     - Use the contract to guide frontend API client work.
 
-25. Expand Backstage-ready docs.
+26. Expand Backstage-ready docs.
     - Add architecture decisions, runbooks, local development notes, and feature roadmap docs.
 
-26. Expand the testing strategy.
+27. Expand the testing strategy.
     - Add backend handler and service tests.
     - Add frontend component and service tests.
     - Add an end-to-end smoke test once core flows exist.
