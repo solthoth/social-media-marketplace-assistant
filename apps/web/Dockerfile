@@ -9,7 +9,7 @@ RUN npm ci --workspace apps/web --include-workspace-root
 COPY apps/web apps/web
 RUN npm --workspace apps/web run build
 
-FROM nginx:1.27-alpine
+FROM nginx:1.31-alpine
 
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/dist/web/browser /usr/share/nginx/html
