@@ -32,6 +32,7 @@ type Repository interface {
 	GetPhoto(ctx context.Context, itemID string, photoID string) (domain.ItemPhoto, error)
 	DeletePhoto(ctx context.Context, itemID string, photoID string) error
 	ReorderPhotos(ctx context.Context, itemID string, photoIDs []string) ([]domain.ItemPhoto, error)
+	SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error)
 }
 
 type Storage interface {
@@ -160,6 +161,16 @@ func (s Service) ReorderPhotos(ctx context.Context, itemID string, photoIDs []st
 		return nil, ErrInvalidPhoto
 	}
 	return s.repository.ReorderPhotos(ctx, itemID, photoIDs)
+}
+
+func (s Service) SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error) {
+	if _, err := s.items.Get(ctx, itemID); err != nil {
+		return nil, err
+	}
+	if strings.TrimSpace(photoID) == "" {
+		return nil, ErrInvalidPhoto
+	}
+	return s.repository.SetPrimaryPhoto(ctx, itemID, photoID)
 }
 
 func readLimited(content io.Reader) ([]byte, error) {

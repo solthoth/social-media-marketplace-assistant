@@ -111,6 +111,29 @@ func (s *PhotosAPISuite) TestPhotoReorderPersistsThroughAPI() {
 	s.Equal([]string{back.ID, front.ID}, integrationPhotoIDs(listed.Photos))
 }
 
+func (s *PhotosAPISuite) TestSetPrimaryPhotoPersistsThroughAPI() {
+	itemID := s.createItem("Canvas bag")
+	front := s.uploadPhoto(itemID, "front.png")
+	back := s.uploadPhoto(itemID, "back.png")
+
+	primary := s.request(http.MethodPatch, "/items/"+itemID+"/photos/"+back.ID+"/primary", nil, "application/json")
+	s.Equal(http.StatusOK, primary.Code)
+
+	var updated listPhotosIntegrationResponse
+	s.Require().NoError(json.NewDecoder(primary.Body).Decode(&updated))
+	s.Equal([]string{front.ID, back.ID}, integrationPhotoIDs(updated.Photos))
+	s.False(updated.Photos[0].IsPrimary)
+	s.True(updated.Photos[1].IsPrimary)
+
+	list := s.request(http.MethodGet, "/items/"+itemID+"/photos", nil, "application/json")
+	s.Equal(http.StatusOK, list.Code)
+
+	var listed listPhotosIntegrationResponse
+	s.Require().NoError(json.NewDecoder(list.Body).Decode(&listed))
+	s.False(listed.Photos[0].IsPrimary)
+	s.True(listed.Photos[1].IsPrimary)
+}
+
 func (s *PhotosAPISuite) TestPhotoAPIValidationErrors() {
 	missingItemUpload := s.multipartRequest(http.MethodPost, "/items/missing/photos", "front.png", pngBytes)
 	s.Equal(http.StatusNotFound, missingItemUpload.Code)

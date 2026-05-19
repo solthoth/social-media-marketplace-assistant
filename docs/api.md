@@ -176,6 +176,15 @@ The request must include the full set of photo IDs for the item.
 
 Response: `200 OK` with reordered photo metadata.
 
+### Set Primary Photo
+
+`PATCH /items/{id}/photos/{photoId}/primary`
+
+Marks the selected photo as the item primary photo and clears the primary flag
+from the other photos for the same item.
+
+Response: `200 OK` with the current photo metadata list.
+
 ### Delete Photo
 
 `DELETE /items/{id}/photos/{photoId}`

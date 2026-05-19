@@ -76,6 +76,13 @@ func (s *PhotosHandlerSuite) TestUploadListReadReorderAndDeletePhotos() {
 	s.Require().NoError(json.NewDecoder(reorderResponse.Body).Decode(&reordered))
 	s.Equal([]string{back.ID, front.ID}, photoResponseIDs(reordered.Photos))
 
+	primaryResponse := s.jsonRequest(http.MethodPatch, "/items/"+item.ID+"/photos/"+back.ID+"/primary", nil)
+	s.Equal(http.StatusOK, primaryResponse.Code)
+	var primary listPhotosResponse
+	s.Require().NoError(json.NewDecoder(primaryResponse.Body).Decode(&primary))
+	s.True(primary.Photos[0].IsPrimary)
+	s.False(primary.Photos[1].IsPrimary)
+
 	deleteResponse := s.jsonRequest(http.MethodDelete, "/items/"+item.ID+"/photos/"+front.ID, nil)
 	s.Equal(http.StatusNoContent, deleteResponse.Code)
 }
@@ -175,6 +182,35 @@ func (r *handlerPhotoRepository) ReorderPhotos(ctx context.Context, itemID strin
 	}
 	r.mu.Unlock()
 	return r.ListPhotos(ctx, itemID)
+}
+
+func (r *handlerPhotoRepository) SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	photo, ok := r.photos[photoID]
+	if !ok || photo.ItemID != itemID {
+		return nil, photos.ErrPhotoNotFound
+	}
+	for id, existing := range r.photos {
+		if existing.ItemID == itemID {
+			existing.IsPrimary = id == photoID
+			r.photos[id] = existing
+		}
+	}
+	return r.listPhotosLocked(itemID), nil
+}
+
+func (r *handlerPhotoRepository) listPhotosLocked(itemID string) []domain.ItemPhoto {
+	result := []domain.ItemPhoto{}
+	for _, photo := range r.photos {
+		if photo.ItemID == itemID {
+			result = append(result, photo)
+		}
+	}
+	slices.SortFunc(result, func(a domain.ItemPhoto, b domain.ItemPhoto) int {
+		return a.SortOrder - b.SortOrder
+	})
+	return result
 }
 
 type handlerPhotoStorage struct {
