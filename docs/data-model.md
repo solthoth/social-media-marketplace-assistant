@@ -31,6 +31,14 @@ Initial statuses:
 - `sold`: item is sold and should be hidden from publish queues by default.
 - `archived`: item is retained for history but no longer active.
 
+Allowed status transitions:
+
+- `draft` can move to `ready_to_list` or `archived`.
+- `ready_to_list` can move to `draft`, `listed`, or `archived`.
+- `listed` can move to `ready_to_list`, `sold`, or `archived`.
+- `sold` can move back to `listed` for correction or to `archived`.
+- `archived` can restore to `draft`.
+
 ## Item Photo
 
 An item photo references media stored by the application.

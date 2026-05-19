@@ -19,6 +19,14 @@ Returns service health.
 
 Items are the central inventory records. Deleting an item archives it instead of physically removing it.
 
+Inventory status changes are validated as a workflow:
+
+- `draft` can move to `ready_to_list` or `archived`.
+- `ready_to_list` can move to `draft`, `listed`, or `archived`.
+- `listed` can move to `ready_to_list`, `sold`, or `archived`.
+- `sold` can move back to `listed` for correction or to `archived`.
+- `archived` can restore to `draft`.
+
 ### Create Item
 
 `POST /items`
@@ -82,6 +90,8 @@ Accepts partial item fields:
   "status": "ready_to_list"
 }
 ```
+
+Invalid status changes return `400 Bad Request` with error code `invalid_status_transition`.
 
 ### Archive Item
 
