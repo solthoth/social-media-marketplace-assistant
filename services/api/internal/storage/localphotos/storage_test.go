@@ -48,3 +48,41 @@ func (s *StorageSuite) TestSaveOpenAndDeleteObject() {
 	_, _, err = s.storage.Open(context.Background(), stored.StorageID, domain.PhotoVariantOriginal)
 	s.ErrorIs(err, photos.ErrPhotoNotFound)
 }
+
+func (s *StorageSuite) TestRejectsUnsafeStorageIDs() {
+	unsafeIDs := []string{
+		"../outside",
+		"/absolute/path",
+		"items/../../outside",
+		"items\\item-1\\photos\\photo-1",
+		"items//item-1/photos/photo-1",
+	}
+
+	for _, storageID := range unsafeIDs {
+		s.Run(storageID, func() {
+			_, err := s.storage.Save(context.Background(), photos.StorageObject{
+				StorageID:   storageID,
+				Variant:     domain.PhotoVariantOriginal,
+				Extension:   ".png",
+				ContentType: "image/png",
+			}, bytes.NewBufferString("image-bytes"))
+			s.ErrorIs(err, photos.ErrInvalidPhoto)
+
+			_, _, err = s.storage.Open(context.Background(), storageID, domain.PhotoVariantOriginal)
+			s.ErrorIs(err, photos.ErrInvalidPhoto)
+
+			s.ErrorIs(s.storage.Delete(context.Background(), storageID), photos.ErrInvalidPhoto)
+		})
+	}
+}
+
+func (s *StorageSuite) TestRejectsUnsafeExtensions() {
+	_, err := s.storage.Save(context.Background(), photos.StorageObject{
+		StorageID:   "items/item-1/photos/photo-1",
+		Variant:     domain.PhotoVariantOriginal,
+		Extension:   "../png",
+		ContentType: "image/png",
+	}, bytes.NewBufferString("image-bytes"))
+
+	s.ErrorIs(err, photos.ErrInvalidPhoto)
+}
