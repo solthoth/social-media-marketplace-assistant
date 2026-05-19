@@ -49,7 +49,9 @@ export interface SaveInventoryItemRequest {
   notes: string;
 }
 
-export type UpdateInventoryItemRequest = Partial<SaveInventoryItemRequest>;
+export type UpdateInventoryItemRequest = Partial<SaveInventoryItemRequest> & {
+  status?: InventoryStatus;
+};
 
 @Injectable({
   providedIn: 'root'

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const apiUrl = 'http://127.0.0.1:8080';
 
@@ -165,3 +165,55 @@ test('edits an existing item from the inventory list', async ({
       .getByText('$72.00')
   ).toBeVisible();
 });
+
+test('changes item status through the edit workflow controls', async ({
+  page,
+  request
+}) => {
+  const title = `E2E workflow handbag ${Date.now()}`;
+
+  const response = await request.post(`${apiUrl}/items`, {
+    data: {
+      title,
+      category: 'Accessories',
+      selling_price_cents: 3900,
+      currency: 'USD'
+    }
+  });
+  expect(response.ok()).toBeTruthy();
+
+  await page.goto('/items');
+  const card = page.locator('mat-card').filter({ hasText: title });
+  const statusBadge = card.locator('.status-badge');
+  await expect(statusBadge).toHaveText('Draft');
+  await expect(card.getByTestId(/item-status-/)).toHaveCount(0);
+
+  await changeStatusFromEditPage(page, card, 'ready_to_list');
+  await expect(statusBadge).toHaveText('Ready to list');
+
+  await changeStatusFromEditPage(page, card, 'listed');
+  await expect(statusBadge).toHaveText('Listed');
+
+  await changeStatusFromEditPage(page, card, 'sold');
+  await expect(statusBadge).toHaveText('Sold');
+
+  await changeStatusFromEditPage(page, card, 'listed');
+  await expect(statusBadge).toHaveText('Listed');
+
+  await changeStatusFromEditPage(page, card, 'archived');
+  await expect(statusBadge).toHaveText('Archived');
+
+  await changeStatusFromEditPage(page, card, 'draft');
+  await expect(statusBadge).toHaveText('Draft');
+});
+
+async function changeStatusFromEditPage(
+  page: Page,
+  card: Locator,
+  status: string
+) {
+  await card.getByRole('link', { name: 'Edit' }).click();
+  await page.getByTestId('item-status').selectOption(status);
+  await page.getByTestId('save-draft').click();
+  await expect(page).toHaveURL(/\/items$/);
+}

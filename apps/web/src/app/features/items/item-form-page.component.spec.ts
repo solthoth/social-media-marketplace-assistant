@@ -90,7 +90,41 @@ describe('ItemFormPageComponent', () => {
     expect(patchRequest.request.body.title).toBe('Updated denim jacket');
     expect(patchRequest.request.body.original_purchase_price_cents).toBe(2000);
     expect(patchRequest.request.body.selling_price_cents).toBe(3600);
+    expect(patchRequest.request.body.status).toBe('draft');
     patchRequest.flush(itemFixture({ title: 'Updated denim jacket' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/items');
+    http.verify();
+  });
+
+  it('allows valid status changes while editing an item', async () => {
+    const { fixture, http, router } = setup('/items/item-1/edit');
+
+    const getRequest = http.expectOne('/api/items/item-1');
+    getRequest.flush(itemFixture({ status: 'ready_to_list' }));
+    fixture.detectChanges();
+
+    const status: HTMLSelectElement = fixture.nativeElement.querySelector(
+      '[data-testid="item-status"]'
+    );
+    expect(Array.from(status.options).map((option) => option.value)).toEqual([
+      'draft',
+      'ready_to_list',
+      'listed',
+      'archived'
+    ]);
+
+    status.value = 'listed';
+    status.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    clickSave(fixture);
+
+    const patchRequest = http.expectOne('/api/items/item-1');
+    expect(patchRequest.request.method).toBe('PATCH');
+    expect(patchRequest.request.body.status).toBe('listed');
+    patchRequest.flush(itemFixture({ status: 'listed' }));
     fixture.detectChanges();
     await fixture.whenStable();
 

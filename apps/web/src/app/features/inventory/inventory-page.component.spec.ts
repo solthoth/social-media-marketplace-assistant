@@ -64,6 +64,9 @@ describe('InventoryPageComponent', () => {
     expect(
       fixture.nativeElement.querySelector('a[href="/items/item-1/edit"]')
     ).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="item-status-item-1"]')
+    ).toBeFalsy();
   });
 
   it('filters loaded items by search text', () => {
@@ -112,6 +115,19 @@ describe('InventoryPageComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Leather boots');
+    http.verify();
+  });
+
+  it('does not expose item status editing from the inventory list', () => {
+    const { fixture, http } = setup();
+
+    flushItems(http, [itemFixture({ id: 'item-1', status: 'draft' })]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Draft');
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="item-status-item-1"]')
+    ).toBeFalsy();
     http.verify();
   });
 

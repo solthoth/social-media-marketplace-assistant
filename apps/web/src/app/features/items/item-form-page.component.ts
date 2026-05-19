@@ -10,8 +10,13 @@ import {
   ApiClientService,
   Currency,
   InventoryItem,
+  InventoryStatus,
   SaveInventoryItemRequest
 } from '../../core/api-client.service';
+import {
+  inventoryStatusLabels,
+  inventoryStatusOptions
+} from '../../core/status-workflow';
 
 const currencies: Currency[] = ['USD'];
 
@@ -157,6 +162,23 @@ const currencies: Currency[] = ['USD'];
           </mat-form-field>
         </div>
 
+        <mat-form-field
+          *ngIf="isEditMode()"
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>Status</mat-label>
+          <select
+            matNativeControl
+            data-testid="item-status"
+            formControlName="status"
+          >
+            <option *ngFor="let status of statusOptions()" [value]="status">
+              {{ statusLabel(status) }}
+            </option>
+          </select>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Notes</mat-label>
           <textarea
@@ -212,6 +234,7 @@ export class ItemFormPageComponent implements OnInit {
     originalPurchasePrice: [0, Validators.min(0)],
     sellingPrice: [0, Validators.min(0)],
     currency: ['USD' as Currency, Validators.required],
+    status: ['draft' as InventoryStatus, Validators.required],
     notes: ['']
   });
 
@@ -268,6 +291,14 @@ export class ItemFormPageComponent implements OnInit {
     return control.invalid && control.touched;
   }
 
+  protected statusLabel(status: InventoryStatus): string {
+    return inventoryStatusLabels[status];
+  }
+
+  protected statusOptions(): InventoryStatus[] {
+    return inventoryStatusOptions(this.form.controls.status.value);
+  }
+
   private loadItem(id: string): void {
     this.isLoading.set(true);
     this.loadError.set(false);
@@ -284,9 +315,11 @@ export class ItemFormPageComponent implements OnInit {
     });
   }
 
-  private formPayload(): SaveInventoryItemRequest {
+  private formPayload(): SaveInventoryItemRequest & {
+    status?: InventoryStatus;
+  } {
     const value = this.form.getRawValue();
-    return {
+    const payload = {
       title: value.title.trim(),
       description: value.description.trim(),
       category: value.category.trim(),
@@ -298,6 +331,13 @@ export class ItemFormPageComponent implements OnInit {
       selling_price_cents: Math.round(Number(value.sellingPrice || 0) * 100),
       currency: value.currency,
       notes: value.notes.trim()
+    };
+    if (!this.isEditMode()) {
+      return payload;
+    }
+    return {
+      ...payload,
+      status: value.status
     };
   }
 
@@ -311,6 +351,7 @@ export class ItemFormPageComponent implements OnInit {
       originalPurchasePrice: item.original_purchase_price_cents / 100,
       sellingPrice: item.selling_price_cents / 100,
       currency: item.currency,
+      status: item.status,
       notes: item.notes
     };
   }
