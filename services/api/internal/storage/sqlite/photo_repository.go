@@ -131,6 +131,37 @@ func (r PhotoRepository) ReorderPhotos(ctx context.Context, itemID string, photo
 	return r.ListPhotos(ctx, itemID)
 }
 
+func (r PhotoRepository) SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error) {
+	if _, err := r.GetPhoto(ctx, itemID, photoID); err != nil {
+		return nil, err
+	}
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.ExecContext(ctx, "update item_photos set is_primary = 0 where item_id = ?", itemID); err != nil {
+		return nil, err
+	}
+	result, err := tx.ExecContext(ctx, "update item_photos set is_primary = 1 where item_id = ? and id = ?", itemID, photoID)
+	if err != nil {
+		return nil, err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if rowsAffected == 0 {
+		return nil, photos.ErrPhotoNotFound
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return r.ListPhotos(ctx, itemID)
+}
+
 type photoScanner interface {
 	Scan(dest ...any) error
 }

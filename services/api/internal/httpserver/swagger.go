@@ -197,6 +197,20 @@ func newOpenAPIDocument() openAPIDocument {
 					},
 				},
 			},
+			"/items/{id}/photos/{photoId}/primary": {
+				"patch": map[string]any{
+					"summary":     "Set the primary item photo",
+					"operationId": "setPrimaryItemPhoto",
+					"parameters": []map[string]any{
+						pathIDParameter(),
+						photoIDParameter(),
+					},
+					"responses": map[string]any{
+						"200": responseRef("ListPhotosResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
 			"/items/{id}/photos/{photoId}": {
 				"delete": map[string]any{
 					"summary":     "Delete an item photo",

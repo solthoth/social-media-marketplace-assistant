@@ -87,6 +87,34 @@ func (s *PhotoRepositorySuite) TestReorderRejectsMissingPhotoIDs() {
 	s.ErrorIs(err, photos.ErrInvalidPhoto)
 }
 
+func (s *PhotoRepositorySuite) TestSetPrimaryPhotoClearsPreviousPrimary() {
+	first := domain.ItemPhoto{
+		ID: "photo-1", ItemID: "item-1", StorageID: "items/item-1/photos/photo-1",
+		Filename: "front.png", MimeType: "image/png", SortOrder: 0, IsPrimary: true, CreatedAt: time.Now().UTC(),
+	}
+	second := domain.ItemPhoto{
+		ID: "photo-2", ItemID: "item-1", StorageID: "items/item-1/photos/photo-2",
+		Filename: "back.png", MimeType: "image/png", SortOrder: 1, CreatedAt: time.Now().UTC(),
+	}
+	_, err := s.repository.CreatePhoto(context.Background(), first)
+	s.Require().NoError(err)
+	_, err = s.repository.CreatePhoto(context.Background(), second)
+	s.Require().NoError(err)
+
+	updated, err := s.repository.SetPrimaryPhoto(context.Background(), "item-1", second.ID)
+
+	s.Require().NoError(err)
+	s.Equal([]string{first.ID, second.ID}, photoRepositoryIDs(updated))
+	s.False(updated[0].IsPrimary)
+	s.True(updated[1].IsPrimary)
+}
+
+func (s *PhotoRepositorySuite) TestSetPrimaryPhotoRejectsMissingPhoto() {
+	_, err := s.repository.SetPrimaryPhoto(context.Background(), "item-1", "missing")
+
+	s.ErrorIs(err, photos.ErrPhotoNotFound)
+}
+
 func photoRepositoryIDs(photos []domain.ItemPhoto) []string {
 	result := make([]string, 0, len(photos))
 	for _, photo := range photos {

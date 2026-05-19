@@ -18,6 +18,7 @@ type photoApplication interface {
 	OpenPhoto(ctx context.Context, itemID string, photoID string, variant domain.PhotoVariant) (io.ReadCloser, photos.ObjectInfo, error)
 	DeletePhoto(ctx context.Context, itemID string, photoID string) error
 	ReorderPhotos(ctx context.Context, itemID string, photoIDs []string) ([]domain.ItemPhoto, error)
+	SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error)
 }
 
 type photoRoutes struct {
@@ -50,6 +51,7 @@ func registerPhotoRoutes(router *gin.Engine, service photoApplication) {
 	router.GET("/items/:id/photos/:photoID/content", routes.content)
 	router.DELETE("/items/:id/photos/:photoID", routes.delete)
 	router.PATCH("/items/:id/photos/order", routes.reorder)
+	router.PATCH("/items/:id/photos/:photoID/primary", routes.setPrimary)
 }
 
 func (r photoRoutes) upload(c *gin.Context) {
@@ -118,6 +120,19 @@ func (r photoRoutes) reorder(c *gin.Context) {
 	}
 
 	result, err := r.service.ReorderPhotos(c.Request.Context(), c.Param("id"), request.PhotoIDs)
+	if err != nil {
+		writePhotoServiceError(c, err)
+		return
+	}
+	response := listPhotosResponse{Photos: make([]photoResponse, 0, len(result))}
+	for _, photo := range result {
+		response.Photos = append(response.Photos, newPhotoResponse(c, photo))
+	}
+	c.JSON(http.StatusOK, response)
+}
+
+func (r photoRoutes) setPrimary(c *gin.Context) {
+	result, err := r.service.SetPrimaryPhoto(c.Request.Context(), c.Param("id"), c.Param("photoID"))
 	if err != nil {
 		writePhotoServiceError(c, err)
 		return

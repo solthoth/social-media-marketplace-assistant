@@ -88,6 +88,26 @@ func (s *ServiceSuite) TestListDeleteAndReorderPhotos() {
 	s.Equal([]string{second.ID}, photoIDs(list))
 }
 
+func (s *ServiceSuite) TestSetPrimaryPhotoMarksOnePhotoPrimary() {
+	first, err := s.service.UploadPhoto(context.Background(), "item-1", UploadPhotoInput{
+		Filename: "first.png",
+		Content:  bytes.NewReader(pngBytes),
+	})
+	s.Require().NoError(err)
+	second, err := s.service.UploadPhoto(context.Background(), "item-1", UploadPhotoInput{
+		Filename: "second.png",
+		Content:  bytes.NewReader(pngBytes),
+	})
+	s.Require().NoError(err)
+
+	updated, err := s.service.SetPrimaryPhoto(context.Background(), "item-1", second.ID)
+
+	s.Require().NoError(err)
+	s.Equal([]string{first.ID, second.ID}, photoIDs(updated))
+	s.False(updated[0].IsPrimary)
+	s.True(updated[1].IsPrimary)
+}
+
 func (s *ServiceSuite) TestOpenPhotoReturnsStoredContent() {
 	uploaded, err := s.service.UploadPhoto(context.Background(), "item-1", UploadPhotoInput{
 		Filename: "jacket.png",
@@ -173,6 +193,19 @@ func (r *memoryPhotoRepository) ReorderPhotos(ctx context.Context, itemID string
 		photo := r.photos[photoID]
 		photo.SortOrder = index
 		r.photos[photoID] = photo
+	}
+	return r.ListPhotos(ctx, itemID)
+}
+
+func (r *memoryPhotoRepository) SetPrimaryPhoto(ctx context.Context, itemID string, photoID string) ([]domain.ItemPhoto, error) {
+	if _, err := r.GetPhoto(ctx, itemID, photoID); err != nil {
+		return nil, err
+	}
+	for id, photo := range r.photos {
+		if photo.ItemID == itemID {
+			photo.IsPrimary = id == photoID
+			r.photos[id] = photo
+		}
 	}
 	return r.ListPhotos(ctx, itemID)
 }
