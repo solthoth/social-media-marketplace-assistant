@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^20.2.0",
+    "@commitlint/config-conventional": "^21.0.1",
     "prettier": "^3.7.4"
   }
 }
