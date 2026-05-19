@@ -55,10 +55,10 @@ This roadmap captures the first implementation work needed to move the app from 
    - ~~Start with local filesystem storage for development.~~
    - ~~Define a future object storage interface for S3-compatible storage.~~
 
-10. Create the photo upload API.
-    - Upload photos for an item.
-    - List item photos.
-    - Delete and reorder photos.
+10. ~~Create the photo upload API.~~
+    - ~~Upload photos for an item.~~
+    - ~~List item photos.~~
+    - ~~Delete and reorder photos.~~
 
 11. Build the photo capture UI.
     - Use camera and file inputs that work well on phones.

@@ -136,6 +136,8 @@ See [data-model.md](data-model.md) for the current MVP entities, statuses, and p
 
 See [photo-storage.md](photo-storage.md) for local photo storage, planned image variants, and the future cloud storage adapter boundary.
 
+The photo upload API stores supported images in the configured photo storage path and serves them through API content routes. Supported upload formats are JPEG, PNG, and WebP.
+
 ## API
 
 See [api.md](api.md) for the current API endpoints and response shapes.
