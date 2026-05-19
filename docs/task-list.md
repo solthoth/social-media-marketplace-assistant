@@ -44,10 +44,10 @@ This roadmap captures the first implementation work needed to move the app from 
    - ~~Support saving drafts.~~
    - ~~Validate required item fields.~~
 
-8. Implement the status workflow.
-   - Use initial statuses: `draft`, `ready_to_list`, `listed`, `sold`, and `archived`.
-   - Add backend validation for valid status transitions.
-   - Add frontend controls for changing item status.
+8. ~~Implement the status workflow.~~
+   - ~~Use initial statuses: `draft`, `ready_to_list`, `listed`, `sold`, and `archived`.~~
+   - ~~Add backend validation for valid status transitions.~~
+   - ~~Add frontend controls for changing item status.~~
 
 ## Phase 3: Photos And Media
 
