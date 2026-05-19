@@ -104,3 +104,39 @@ func (s *ServiceSuite) TestListGetUpdateAndArchiveItem() {
 	s.Require().NoError(err)
 	s.Equal(domain.InventoryStatusArchived, archived.Status)
 }
+
+func (s *ServiceSuite) TestUpdateItemRejectsInvalidStatusTransition() {
+	created, err := s.service.CreateItem(context.Background(), CreateItemInput{
+		Title: "Bracelet",
+	})
+	s.Require().NoError(err)
+
+	status := domain.InventoryStatusListed
+	_, err = s.service.UpdateItem(context.Background(), created.ID, UpdateItemInput{
+		Status: &status,
+	})
+
+	s.ErrorIs(err, ErrInvalidStatusTransition)
+}
+
+func (s *ServiceSuite) TestStatusWorkflowAllowsReversibleSoldAndArchivedTransitions() {
+	created, err := s.service.CreateItem(context.Background(), CreateItemInput{
+		Title: "Vintage bag",
+	})
+	s.Require().NoError(err)
+
+	for _, status := range []domain.InventoryStatus{
+		domain.InventoryStatusReadyToList,
+		domain.InventoryStatusListed,
+		domain.InventoryStatusSold,
+		domain.InventoryStatusListed,
+		domain.InventoryStatusArchived,
+		domain.InventoryStatusDraft,
+	} {
+		updated, updateErr := s.service.UpdateItem(context.Background(), created.ID, UpdateItemInput{
+			Status: &status,
+		})
+		s.Require().NoError(updateErr)
+		s.Equal(status, updated.Status)
+	}
+}

@@ -154,6 +154,46 @@ func (s InventoryStatus) IsValid() bool {
 	}
 }
 
+func (s InventoryStatus) CanTransitionTo(next InventoryStatus) bool {
+	if !s.IsValid() || !next.IsValid() {
+		return false
+	}
+	if s == next {
+		return true
+	}
+
+	allowedTransitions := map[InventoryStatus][]InventoryStatus{
+		InventoryStatusDraft: {
+			InventoryStatusReadyToList,
+			InventoryStatusArchived,
+		},
+		InventoryStatusReadyToList: {
+			InventoryStatusDraft,
+			InventoryStatusListed,
+			InventoryStatusArchived,
+		},
+		InventoryStatusListed: {
+			InventoryStatusReadyToList,
+			InventoryStatusSold,
+			InventoryStatusArchived,
+		},
+		InventoryStatusSold: {
+			InventoryStatusListed,
+			InventoryStatusArchived,
+		},
+		InventoryStatusArchived: {
+			InventoryStatusDraft,
+		},
+	}
+
+	for _, allowed := range allowedTransitions[s] {
+		if allowed == next {
+			return true
+		}
+	}
+	return false
+}
+
 func (m Money) Validate() error {
 	if m.AmountCents < 0 {
 		return errors.New("amount cents must be greater than or equal to zero")

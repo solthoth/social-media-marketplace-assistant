@@ -81,6 +81,33 @@ func (s *ItemsAPISuite) TestItemLifecyclePersistsThroughAPI() {
 	s.Equal("archived", archived["status"])
 }
 
+func (s *ItemsAPISuite) TestStatusWorkflowRejectsInvalidTransitionAndRestoresArchivedDraft() {
+	create := s.request(http.MethodPost, "/items", bytes.NewBufferString(`{
+		"title": "Ceramic planter"
+	}`))
+	s.Equal(http.StatusCreated, create.Code)
+
+	var created map[string]any
+	s.Require().NoError(json.NewDecoder(create.Body).Decode(&created))
+	id := created["id"].(string)
+
+	invalid := s.request(http.MethodPatch, "/items/"+id, bytes.NewBufferString(`{
+		"status": "listed"
+	}`))
+	s.Equal(http.StatusBadRequest, invalid.Code)
+
+	for _, status := range []string{"ready_to_list", "listed", "sold", "listed", "archived", "draft"} {
+		update := s.request(http.MethodPatch, "/items/"+id, bytes.NewBufferString(`{
+			"status": "`+status+`"
+		}`))
+		s.Equal(http.StatusOK, update.Code)
+
+		var updated map[string]any
+		s.Require().NoError(json.NewDecoder(update.Body).Decode(&updated))
+		s.Equal(status, updated["status"])
+	}
+}
+
 func (s *ItemsAPISuite) request(method string, target string, body *bytes.Buffer) *httptest.ResponseRecorder {
 	var requestBody io.Reader
 	if body != nil {

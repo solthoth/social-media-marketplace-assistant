@@ -159,8 +159,9 @@ func newOpenAPIDocument() openAPIDocument {
 					},
 				},
 				"InventoryStatus": map[string]any{
-					"type": "string",
-					"enum": []string{"draft", "ready_to_list", "listed", "sold", "archived"},
+					"type":        "string",
+					"description": "Inventory workflow status. Updates must follow the allowed transition matrix documented for the API.",
+					"enum":        []string{"draft", "ready_to_list", "listed", "sold", "archived"},
 				},
 				"Currency": map[string]any{
 					"type": "string",

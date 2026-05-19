@@ -51,6 +51,37 @@ func (s *ItemSuite) TestInventoryStatusValidation() {
 	s.False(InventoryStatus("deleted").IsValid())
 }
 
+func (s *ItemSuite) TestInventoryStatusTransitions() {
+	tests := []struct {
+		name    string
+		current InventoryStatus
+		next    InventoryStatus
+		want    bool
+	}{
+		{name: "same status is allowed", current: InventoryStatusDraft, next: InventoryStatusDraft, want: true},
+		{name: "draft can become ready", current: InventoryStatusDraft, next: InventoryStatusReadyToList, want: true},
+		{name: "draft can be archived", current: InventoryStatusDraft, next: InventoryStatusArchived, want: true},
+		{name: "draft cannot become listed", current: InventoryStatusDraft, next: InventoryStatusListed, want: false},
+		{name: "ready can return to draft", current: InventoryStatusReadyToList, next: InventoryStatusDraft, want: true},
+		{name: "ready can become listed", current: InventoryStatusReadyToList, next: InventoryStatusListed, want: true},
+		{name: "listed can return to ready", current: InventoryStatusListed, next: InventoryStatusReadyToList, want: true},
+		{name: "listed can become sold", current: InventoryStatusListed, next: InventoryStatusSold, want: true},
+		{name: "listed can be archived", current: InventoryStatusListed, next: InventoryStatusArchived, want: true},
+		{name: "sold can return to listed", current: InventoryStatusSold, next: InventoryStatusListed, want: true},
+		{name: "sold can be archived", current: InventoryStatusSold, next: InventoryStatusArchived, want: true},
+		{name: "sold cannot become ready", current: InventoryStatusSold, next: InventoryStatusReadyToList, want: false},
+		{name: "archived can be restored to draft", current: InventoryStatusArchived, next: InventoryStatusDraft, want: true},
+		{name: "archived cannot become listed", current: InventoryStatusArchived, next: InventoryStatusListed, want: false},
+		{name: "invalid next status is rejected", current: InventoryStatusDraft, next: InventoryStatus("deleted"), want: false},
+	}
+
+	for _, test := range tests {
+		s.Run(test.name, func() {
+			s.Equal(test.want, test.current.CanTransitionTo(test.next))
+		})
+	}
+}
+
 func (s *ItemSuite) TestMoneyValidation() {
 	s.NoError((Money{AmountCents: 0, Currency: "USD"}).Validate())
 	s.Error((Money{AmountCents: -1, Currency: "USD"}).Validate())
