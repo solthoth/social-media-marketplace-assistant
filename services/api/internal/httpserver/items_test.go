@@ -101,6 +101,30 @@ func (s *ItemsHandlerSuite) TestCreateItemValidationError() {
 	s.Equal("invalid_item", body.Error.Code)
 }
 
+func (s *ItemsHandlerSuite) TestPatchInvalidStatusTransitionReturnsBadRequest() {
+	createResponse := s.request(
+		http.MethodPost,
+		"/items",
+		bytes.NewBufferString(`{"title":"Denim jacket"}`),
+	)
+	s.Equal(http.StatusCreated, createResponse.Code)
+
+	var created itemResponse
+	s.Require().NoError(json.NewDecoder(createResponse.Body).Decode(&created))
+
+	patchResponse := s.request(
+		http.MethodPatch,
+		"/items/"+created.ID,
+		bytes.NewBufferString(`{"status":"listed"}`),
+	)
+
+	s.Equal(http.StatusBadRequest, patchResponse.Code)
+
+	var body errorResponse
+	s.Require().NoError(json.NewDecoder(patchResponse.Body).Decode(&body))
+	s.Equal("invalid_status_transition", body.Error.Code)
+}
+
 func (s *ItemsHandlerSuite) TestGetMissingItemReturnsNotFound() {
 	response := s.request(http.MethodGet, "/items/missing", nil)
 

@@ -194,6 +194,8 @@ func newItemResponse(item domain.Item) itemResponse {
 
 func writeItemServiceError(c *gin.Context, err error) {
 	switch {
+	case errors.Is(err, items.ErrInvalidStatusTransition):
+		writeError(c, NewAPIError(http.StatusBadRequest, "invalid_status_transition", "item status transition is invalid"))
 	case errors.Is(err, items.ErrInvalidItem):
 		writeError(c, NewAPIError(http.StatusBadRequest, "invalid_item", "item request is invalid"))
 	case errors.Is(err, items.ErrItemNotFound):

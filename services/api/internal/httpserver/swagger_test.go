@@ -42,6 +42,8 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	s.Equal("#/components/schemas/Currency", currency["$ref"])
 	currencySchema := body.Components.Schemas["Currency"].(map[string]any)
 	s.Equal([]any{"USD"}, currencySchema["enum"])
+	statusSchema := body.Components.Schemas["InventoryStatus"].(map[string]any)
+	s.Contains(statusSchema["description"], "transition matrix")
 }
 
 func (s *SwaggerSuite) TestSwaggerUIIsServed() {

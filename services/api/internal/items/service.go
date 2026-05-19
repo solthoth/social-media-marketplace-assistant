@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	ErrInvalidItem  = errors.New("invalid item")
-	ErrItemNotFound = errors.New("item not found")
+	ErrInvalidItem             = errors.New("invalid item")
+	ErrInvalidStatusTransition = errors.New("invalid status transition")
+	ErrItemNotFound            = errors.New("item not found")
 )
 
 type Repository interface {
@@ -134,6 +135,9 @@ func (s Service) UpdateItem(ctx context.Context, id string, input UpdateItemInpu
 		item.SellingPrice.Currency = currency
 	}
 	if input.Status != nil {
+		if !item.Status.CanTransitionTo(*input.Status) {
+			return domain.Item{}, ErrInvalidStatusTransition
+		}
 		item.Status = *input.Status
 	}
 	if input.Notes != nil {
