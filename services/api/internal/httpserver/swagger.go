@@ -146,6 +146,100 @@ func newOpenAPIDocument() openAPIDocument {
 					},
 				},
 			},
+			"/items/{id}/photos": {
+				"get": map[string]any{
+					"summary":     "List item photos",
+					"operationId": "listItemPhotos",
+					"parameters":  []map[string]any{pathIDParameter()},
+					"responses": map[string]any{
+						"200": responseRef("ListPhotosResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+				"post": map[string]any{
+					"summary":     "Upload an item photo",
+					"operationId": "uploadItemPhoto",
+					"parameters":  []map[string]any{pathIDParameter()},
+					"requestBody": map[string]any{
+						"required": true,
+						"content": map[string]any{
+							"multipart/form-data": map[string]any{
+								"schema": map[string]any{
+									"type":     "object",
+									"required": []string{"photo"},
+									"properties": map[string]any{
+										"photo": map[string]any{
+											"type":   "string",
+											"format": "binary",
+										},
+									},
+								},
+							},
+						},
+					},
+					"responses": map[string]any{
+						"201": responseRef("PhotoResponse"),
+						"400": responseRef("ErrorResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
+			"/items/{id}/photos/order": {
+				"patch": map[string]any{
+					"summary":     "Reorder item photos",
+					"operationId": "reorderItemPhotos",
+					"parameters":  []map[string]any{pathIDParameter()},
+					"requestBody": requestBodyRef("ReorderPhotosRequest"),
+					"responses": map[string]any{
+						"200": responseRef("ListPhotosResponse"),
+						"400": responseRef("ErrorResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
+			"/items/{id}/photos/{photoId}": {
+				"delete": map[string]any{
+					"summary":     "Delete an item photo",
+					"operationId": "deleteItemPhoto",
+					"parameters": []map[string]any{
+						pathIDParameter(),
+						photoIDParameter(),
+					},
+					"responses": map[string]any{
+						"204": map[string]any{"description": "Photo deleted."},
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
+			"/items/{id}/photos/{photoId}/content": {
+				"get": map[string]any{
+					"summary":     "Read item photo content",
+					"operationId": "getItemPhotoContent",
+					"parameters": []map[string]any{
+						pathIDParameter(),
+						photoIDParameter(),
+						{
+							"name":        "variant",
+							"in":          "query",
+							"required":    false,
+							"description": "Photo variant to read.",
+							"schema":      schemaRef("PhotoVariant"),
+						},
+					},
+					"responses": map[string]any{
+						"200": map[string]any{
+							"description": "Photo content.",
+							"content": map[string]any{
+								"image/jpeg": map[string]any{"schema": binaryStringSchema()},
+								"image/png":  map[string]any{"schema": binaryStringSchema()},
+								"image/webp": map[string]any{"schema": binaryStringSchema()},
+							},
+						},
+						"400": responseRef("ErrorResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
 		},
 		Components: openAPIComponents{
 			Schemas: map[string]any{
@@ -167,8 +261,22 @@ func newOpenAPIDocument() openAPIDocument {
 					"type": "string",
 					"enum": []string{"USD"},
 				},
+				"PhotoVariant": map[string]any{
+					"type": "string",
+					"enum": []string{"original", "medium", "thumbnail"},
+				},
 				"CreateItemRequest": itemRequestSchema(false),
 				"UpdateItemRequest": itemRequestSchema(true),
+				"ReorderPhotosRequest": map[string]any{
+					"type":     "object",
+					"required": []string{"photo_ids"},
+					"properties": map[string]any{
+						"photo_ids": map[string]any{
+							"type":  "array",
+							"items": stringSchema(),
+						},
+					},
+				},
 				"ItemResponse": map[string]any{
 					"type": "object",
 					"properties": map[string]any{
@@ -193,6 +301,31 @@ func newOpenAPIDocument() openAPIDocument {
 						"items": map[string]any{
 							"type":  "array",
 							"items": schemaRef("ItemResponse"),
+						},
+					},
+				},
+				"PhotoResponse": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"id":         stringSchema(),
+						"item_id":    stringSchema(),
+						"filename":   stringSchema(),
+						"mime_type":  stringSchema(),
+						"sort_order": integerSchema(),
+						"is_primary": map[string]any{"type": "boolean"},
+						"content_urls": map[string]any{
+							"type":                 "object",
+							"additionalProperties": stringSchema(),
+						},
+						"created_at": stringSchemaWithFormat("date-time"),
+					},
+				},
+				"ListPhotosResponse": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"photos": map[string]any{
+							"type":  "array",
+							"items": schemaRef("PhotoResponse"),
 						},
 					},
 				},
@@ -245,6 +378,15 @@ func pathIDParameter() map[string]any {
 	}
 }
 
+func photoIDParameter() map[string]any {
+	return map[string]any{
+		"name":     "photoId",
+		"in":       "path",
+		"required": true,
+		"schema":   stringSchema(),
+	}
+}
+
 func requestBodyRef(schema string) map[string]any {
 	return map[string]any{
 		"required": true,
@@ -288,5 +430,12 @@ func integerSchema() map[string]any {
 	return map[string]any{
 		"type":   "integer",
 		"format": "int64",
+	}
+}
+
+func binaryStringSchema() map[string]any {
+	return map[string]any{
+		"type":   "string",
+		"format": "binary",
 	}
 }

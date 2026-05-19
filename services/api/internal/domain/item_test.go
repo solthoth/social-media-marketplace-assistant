@@ -88,3 +88,10 @@ func (s *ItemSuite) TestMoneyValidation() {
 	s.Error((Money{AmountCents: 100, Currency: "usd"}).Validate())
 	s.Error((Money{AmountCents: 100, Currency: "EUR"}).Validate())
 }
+
+func (s *ItemSuite) TestPhotoVariantValidation() {
+	s.True(PhotoVariantOriginal.IsValid())
+	s.True(PhotoVariantMedium.IsValid())
+	s.True(PhotoVariantThumbnail.IsValid())
+	s.False(PhotoVariant("poster").IsValid())
+}

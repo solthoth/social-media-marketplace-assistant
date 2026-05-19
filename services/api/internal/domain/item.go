@@ -25,6 +25,14 @@ const (
 	ListingStatusRemoved   ListingStatus = "removed"
 )
 
+type PhotoVariant string
+
+const (
+	PhotoVariantOriginal  PhotoVariant = "original"
+	PhotoVariantMedium    PhotoVariant = "medium"
+	PhotoVariantThumbnail PhotoVariant = "thumbnail"
+)
+
 type Currency string
 
 const (
@@ -64,6 +72,15 @@ type ItemPhoto struct {
 	SortOrder int
 	IsPrimary bool
 	CreatedAt time.Time
+}
+
+func (v PhotoVariant) IsValid() bool {
+	switch v {
+	case PhotoVariantOriginal, PhotoVariantMedium, PhotoVariantThumbnail:
+		return true
+	default:
+		return false
+	}
 }
 
 type ConnectedAccount struct {

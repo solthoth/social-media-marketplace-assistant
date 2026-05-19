@@ -13,6 +13,8 @@ import (
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/config"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/httpserver"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/items"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/photos"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/storage/localphotos"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/storage/sqlite"
 )
 
@@ -30,10 +32,13 @@ func main() {
 	defer db.Close()
 	itemRepository := sqlite.NewItemRepository(db)
 	itemService := items.NewService(itemRepository)
+	photoRepository := sqlite.NewPhotoRepository(db)
+	photoStorage := localphotos.NewStorage(cfg.PhotoStoragePath)
+	photoService := photos.NewService(itemRepository, photoRepository, photoStorage)
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           httpserver.NewRouter(httpserver.RouterDependencies{ItemService: &itemService}),
+		Handler:           httpserver.NewRouter(httpserver.RouterDependencies{ItemService: &itemService, PhotoService: &photoService}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

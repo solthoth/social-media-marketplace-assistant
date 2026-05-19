@@ -34,6 +34,9 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	s.Contains(body.Paths, "/healthz")
 	s.Contains(body.Paths, "/items")
 	s.Contains(body.Paths, "/items/{id}")
+	s.Contains(body.Paths, "/items/{id}/photos")
+	s.Contains(body.Paths, "/items/{id}/photos/{photoId}/content")
+	s.Contains(body.Paths, "/items/{id}/photos/order")
 	itemResponse := body.Components.Schemas["ItemResponse"].(map[string]any)
 	properties := itemResponse["properties"].(map[string]any)
 	s.Contains(properties, "original_purchase_price_cents")
@@ -44,6 +47,9 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	s.Equal([]any{"USD"}, currencySchema["enum"])
 	statusSchema := body.Components.Schemas["InventoryStatus"].(map[string]any)
 	s.Contains(statusSchema["description"], "transition matrix")
+	photoResponse := body.Components.Schemas["PhotoResponse"].(map[string]any)
+	photoProperties := photoResponse["properties"].(map[string]any)
+	s.Contains(photoProperties, "content_urls")
 }
 
 func (s *SwaggerSuite) TestSwaggerUIIsServed() {

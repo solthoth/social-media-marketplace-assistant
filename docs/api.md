@@ -101,6 +101,89 @@ Archives the item by setting status to `archived`.
 
 Response: `204 No Content`.
 
+## Item Photos
+
+Photo bytes are uploaded with multipart form data and served back through API routes. The backend stores metadata in SQLite and stores bytes through the configured photo storage adapter.
+
+Supported upload content types:
+
+- `image/jpeg`
+- `image/png`
+- `image/webp`
+
+### Upload Photo
+
+`POST /items/{id}/photos`
+
+Request body: `multipart/form-data` with a `photo` file field.
+
+Response: `201 Created` with the photo metadata.
+
+```json
+{
+  "id": "photo-id",
+  "item_id": "item-id",
+  "filename": "front.png",
+  "mime_type": "image/png",
+  "sort_order": 0,
+  "is_primary": true,
+  "content_urls": {
+    "original": "/items/item-id/photos/photo-id/content?variant=original",
+    "medium": "/items/item-id/photos/photo-id/content?variant=medium",
+    "thumbnail": "/items/item-id/photos/photo-id/content?variant=thumbnail"
+  },
+  "created_at": "2026-05-19T00:00:00Z"
+}
+```
+
+The first uploaded photo for an item is marked primary. Later image normalization and generated variants are planned; until variants are generated, variant content routes may return the original stored bytes.
+
+### List Photos
+
+`GET /items/{id}/photos`
+
+Response body:
+
+```json
+{
+  "photos": []
+}
+```
+
+### Get Photo Content
+
+`GET /items/{id}/photos/{photoId}/content`
+
+Optional query parameters:
+
+- `variant`: one of `original`, `medium`, or `thumbnail`. Defaults to `original`.
+
+Returns the image bytes with the stored image content type.
+
+### Reorder Photos
+
+`PATCH /items/{id}/photos/order`
+
+Request body:
+
+```json
+{
+  "photo_ids": ["photo-2", "photo-1"]
+}
+```
+
+The request must include the full set of photo IDs for the item.
+
+Response: `200 OK` with reordered photo metadata.
+
+### Delete Photo
+
+`DELETE /items/{id}/photos/{photoId}`
+
+Deletes the photo metadata and stored photo bytes.
+
+Response: `204 No Content`.
+
 ## Error Shape
 
 Errors use a consistent response shape:
