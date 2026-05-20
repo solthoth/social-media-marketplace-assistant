@@ -40,13 +40,14 @@ func main() {
 	routerDependencies := httpserver.RouterDependencies{ItemService: &itemService, PhotoService: &photoService}
 	if cfg.AIEnrichmentEnabled {
 		enrichmentRepository := sqlite.NewEnrichmentRepository(db)
-		enrichmentProvider := ai.FakeProvider{}
-		enrichmentService := enrichment.NewService(
+		enrichmentProvider := enrichmentProvider(cfg)
+		enrichmentService := enrichment.NewServiceWithPhotoContent(
 			itemRepository,
 			photoRepository,
 			enrichmentRepository,
 			enrichmentProvider,
-			enrichment.ProviderConfig{Provider: cfg.AIProvider, Model: cfg.AIModel},
+			photoService,
+			enrichment.ProviderConfig{Provider: cfg.AIProvider, Model: enrichmentModel(cfg)},
 		)
 		routerDependencies.EnrichmentService = &enrichmentService
 	}
@@ -80,4 +81,23 @@ func main() {
 			os.Exit(1)
 		}
 	}
+}
+
+func enrichmentProvider(cfg config.Config) enrichment.ItemDetailProvider {
+	switch cfg.AIProvider {
+	case "openai":
+		return ai.NewOpenAIProvider(ai.OpenAIProviderConfig{
+			APIKey: cfg.OpenAIAPIKey,
+			Model:  enrichmentModel(cfg),
+		})
+	default:
+		return ai.FakeProvider{}
+	}
+}
+
+func enrichmentModel(cfg config.Config) string {
+	if cfg.AIProvider == "openai" && cfg.AIModel == "fake-vision" {
+		return "gpt-4.1-mini"
+	}
+	return cfg.AIModel
 }
