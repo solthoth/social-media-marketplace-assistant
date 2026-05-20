@@ -14,8 +14,9 @@ Environment variables:
 - `DATABASE_PATH`: SQLite database path. Defaults to `data/app.db`.
 - `PHOTO_STORAGE_PATH`: local item photo storage path. Defaults to `data/photos`.
 - `AI_ENRICHMENT_ENABLED`: enables AI enrichment routes and worker behavior. Defaults to disabled until implemented.
-- `AI_PROVIDER`: AI provider adapter. Use `fake` for tests and local deterministic development; use `openai` for OpenAI.
+- `AI_PROVIDER`: AI provider adapter. Use `fake` for tests and local deterministic development; use `openai` for OpenAI. Planned local Ollama development should use `ollama` after the Ollama adapter is implemented.
 - `AI_MODEL`: model name for the configured AI provider.
+- `AI_BASE_URL`: planned base URL for local or proxy-backed AI providers. For host-running Ollama from Docker Compose, use `http://host.docker.internal:11434`.
 - `OPENAI_API_KEY`: required only when `AI_PROVIDER=openai`.
 
 Health endpoint:
@@ -149,6 +150,25 @@ The photo upload API stores supported images in the configured photo storage pat
 ## AI Enrichment
 
 See [ai-enrichment.md](ai-enrichment.md) for the planned asynchronous workflow that generates missing item details from title and photos. CI and local tests should use the fake provider so runs stay deterministic and do not require external API calls.
+
+For local Ollama testing, run Ollama on the host machine instead of as a Docker Compose service. This is the preferred setup because Ollama performance and GPU/Metal acceleration are host-specific, especially on macOS, and Docker-based Ollama commonly runs slower or needs extra GPU runtime configuration. Keeping Ollama on the host also avoids storing large model weights inside this repository's compose volumes.
+
+Planned local Ollama flow:
+
+```sh
+ollama pull gemma3
+```
+
+Then configure the API container or local API process with:
+
+```sh
+AI_ENRICHMENT_ENABLED=true
+AI_PROVIDER=ollama
+AI_MODEL=gemma3
+AI_BASE_URL=http://host.docker.internal:11434
+```
+
+When running the API directly on the host, use `AI_BASE_URL=http://localhost:11434` instead.
 
 ## API
 

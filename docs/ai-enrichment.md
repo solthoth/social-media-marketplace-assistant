@@ -46,6 +46,7 @@ Add an `internal/ai` package for provider adapters:
 
 - `fake`: deterministic provider for local tests and CI.
 - `openai`: OpenAI Responses API provider for production use.
+- `ollama`: planned local development provider for a host-running Ollama instance.
 - future provider adapters can implement the same interface.
 
 Suggested provider interface:
@@ -136,13 +137,40 @@ The OpenAI adapter uses the Responses API with image inputs. The backend provide
 
 Use structured output from the provider where practical so the service can validate and persist predictable suggestion fields. The prompt should instruct the model to leave uncertain fields empty rather than guessing, especially for size and condition.
 
+## Local Ollama Provider
+
+Local Ollama support should target an Ollama process running on the host machine, not an Ollama container in the repository's default Docker Compose stack.
+
+Reasons:
+
+- Host-running Ollama is the best developer experience on macOS because it can use the host's native acceleration path.
+- Docker-based Ollama may require machine-specific GPU runtime configuration and can be much slower without it.
+- Model weights are large and should stay in the host Ollama model cache instead of an app compose volume.
+- Keeping Ollama outside Compose keeps the app stack smaller while the provider adapter is still experimental.
+
+When the Ollama adapter is implemented, the API container should reach host Ollama with:
+
+```sh
+AI_ENRICHMENT_ENABLED=true
+AI_PROVIDER=ollama
+AI_MODEL=gemma3
+AI_BASE_URL=http://host.docker.internal:11434
+```
+
+When running the API directly on the host, use:
+
+```sh
+AI_BASE_URL=http://localhost:11434
+```
+
 ## Configuration
 
 Proposed environment variables:
 
 - `AI_ENRICHMENT_ENABLED`: enables enrichment routes and worker behavior. Defaults to `false` until the feature is ready.
-- `AI_PROVIDER`: `fake` or `openai`. Tests and CI should use `fake`.
+- `AI_PROVIDER`: `fake`, `openai`, or planned `ollama`. Tests and CI should use `fake`.
 - `AI_MODEL`: model name for the selected provider.
+- `AI_BASE_URL`: base URL for local or proxy-backed providers such as Ollama.
 - `OPENAI_API_KEY`: required only when `AI_PROVIDER=openai`.
 
 ## Async Processing
