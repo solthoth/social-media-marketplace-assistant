@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/ai"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/enrichment"
@@ -76,12 +77,13 @@ func (s *EnrichmentAPISuite) TestEnrichmentLifecycleThroughAPI() {
 	jobID := created["id"].(string)
 	s.Equal("queued", created["status"])
 
-	processed, err := s.enrichmentService.ProcessJob(context.Background(), jobID)
-	s.Require().NoError(err)
-	s.Equal(enrichment.JobStatusCompleted, processed.Status)
+	s.Eventually(func() bool {
+		processed, err := s.enrichmentService.GetJob(context.Background(), itemID, jobID)
+		return err == nil && processed.Status == enrichment.JobStatusCompleted
+	}, time.Second, 10*time.Millisecond)
 
 	apply := s.request(http.MethodPost, "/items/"+itemID+"/enrichment-jobs/"+jobID+"/apply", nil, "application/json")
-	s.Equal(http.StatusOK, apply.Code)
+	s.Require().Equal(http.StatusOK, apply.Code)
 
 	var applied map[string]any
 	s.Require().NoError(json.NewDecoder(apply.Body).Decode(&applied))
