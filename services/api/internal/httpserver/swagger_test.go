@@ -38,6 +38,9 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	s.Contains(body.Paths, "/items/{id}/photos/{photoId}/content")
 	s.Contains(body.Paths, "/items/{id}/photos/order")
 	s.Contains(body.Paths, "/items/{id}/photos/{photoId}/primary")
+	s.Contains(body.Paths, "/items/{id}/enrichment-jobs")
+	s.Contains(body.Paths, "/items/{id}/enrichment-jobs/{jobId}")
+	s.Contains(body.Paths, "/items/{id}/enrichment-jobs/{jobId}/apply")
 	itemResponse := body.Components.Schemas["ItemResponse"].(map[string]any)
 	properties := itemResponse["properties"].(map[string]any)
 	s.Contains(properties, "original_purchase_price_cents")
@@ -51,6 +54,9 @@ func (s *SwaggerSuite) TestOpenAPIDocumentIncludesCoreRoutes() {
 	photoResponse := body.Components.Schemas["PhotoResponse"].(map[string]any)
 	photoProperties := photoResponse["properties"].(map[string]any)
 	s.Contains(photoProperties, "content_urls")
+	enrichmentJobResponse := body.Components.Schemas["EnrichmentJobResponse"].(map[string]any)
+	enrichmentProperties := enrichmentJobResponse["properties"].(map[string]any)
+	s.Contains(enrichmentProperties, "suggestion")
 }
 
 func (s *SwaggerSuite) TestSwaggerUIIsServed() {
