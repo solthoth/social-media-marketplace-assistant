@@ -54,6 +54,40 @@ export interface ListItemPhotosResponse {
   photos: ItemPhoto[];
 }
 
+export type EnrichmentJobStatus =
+  | 'queued'
+  | 'processing'
+  | 'completed'
+  | 'failed';
+
+export interface ItemDetailSuggestion {
+  description: string;
+  category: string;
+  size: string;
+  condition: string;
+  notes: string;
+}
+
+export interface EnrichmentJob {
+  id: string;
+  item_id: string;
+  status: EnrichmentJobStatus;
+  provider: string;
+  model: string;
+  requested_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  applied_at: string | null;
+  error_message: string;
+  suggestion: ItemDetailSuggestion;
+}
+
+export interface ApplyEnrichmentJobResponse {
+  item: InventoryItem;
+  job: EnrichmentJob;
+  applied_fields: string[];
+}
+
 export interface SaveInventoryItemRequest {
   title: string;
   description: string;
@@ -135,5 +169,31 @@ export class ApiClientService {
 
   deleteItemPhoto(itemId: string, photoId: string): Observable<void> {
     return this.http.delete<void>(`/api/items/${itemId}/photos/${photoId}`);
+  }
+
+  createItemEnrichmentJob(itemId: string): Observable<EnrichmentJob> {
+    return this.http.post<EnrichmentJob>(
+      `/api/items/${itemId}/enrichment-jobs`,
+      {}
+    );
+  }
+
+  getItemEnrichmentJob(
+    itemId: string,
+    jobId: string
+  ): Observable<EnrichmentJob> {
+    return this.http.get<EnrichmentJob>(
+      `/api/items/${itemId}/enrichment-jobs/${jobId}`
+    );
+  }
+
+  applyItemEnrichmentJob(
+    itemId: string,
+    jobId: string
+  ): Observable<ApplyEnrichmentJobResponse> {
+    return this.http.post<ApplyEnrichmentJobResponse>(
+      `/api/items/${itemId}/enrichment-jobs/${jobId}/apply`,
+      {}
+    );
   }
 }

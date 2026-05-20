@@ -259,6 +259,38 @@ test('uploads, previews, reorders, marks primary, and removes item photos', asyn
   await expect(backCard).toBeVisible();
 });
 
+test('generates item details from title and photos with AI assist', async ({
+  page,
+  request
+}, testInfo) => {
+  const title = `E2E AI denim jacket ${Date.now()}`;
+  const create = await request.post(`${apiUrl}/items`, {
+    data: {
+      title,
+      currency: 'USD'
+    }
+  });
+  expect(create.ok()).toBeTruthy();
+  const item = await create.json();
+
+  const photo = testInfo.outputPath('ai-front.png');
+  writeFileSync(photo, Buffer.from(pngBytes));
+
+  await page.goto(`/items/${item.id}/edit`);
+  await page.getByTestId('item-photo-input').setInputFiles(photo);
+  await expect(
+    page.locator('.photo-card').filter({ hasText: 'ai-front.png' })
+  ).toBeVisible();
+
+  await page.getByTestId('generate-details').click();
+
+  await expect(page.getByTestId('item-description')).toHaveValue(
+    /AI-generated draft details/
+  );
+  await expect(page.getByTestId('item-category')).toHaveValue('Uncategorized');
+  await expect(page.getByText(/Filled description, category/)).toBeVisible();
+});
+
 async function changeStatusFromEditPage(
   page: Page,
   card: Locator,

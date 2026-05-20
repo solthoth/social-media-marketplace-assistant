@@ -48,6 +48,8 @@ Use `/items/new` to capture a new draft item. Use `/items/{id}/edit` to edit an 
 
 Photo capture is available from `/items/{id}/edit` after an item exists. The photo UI supports phone camera capture and local image file selection, previews thumbnail content through the API proxy, and lets sellers remove, reorder, and choose the primary photo.
 
+AI assist is available from `/items/{id}/edit` when AI enrichment is enabled and the item has a title and at least one photo. The panel starts an enrichment job, polls until completion, and applies completed suggestions to empty fields only. Local and CI runs should use `AI_PROVIDER=fake`; real OpenAI calls require `AI_PROVIDER=openai`, `AI_ENRICHMENT_ENABLED=true`, and `OPENAI_API_KEY`.
+
 The frontend uses Angular Material components with the Rose/Red prebuilt theme. Prefer Material form fields, buttons, toolbar, and card components for new mobile-facing UI controls so spacing, touch targets, and validation states stay consistent.
 
 ## Docker Compose

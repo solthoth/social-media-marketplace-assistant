@@ -15,6 +15,7 @@ type enrichmentApplication interface {
 	CreateJob(ctx context.Context, itemID string) (enrichment.Job, error)
 	ListJobs(ctx context.Context, itemID string) ([]enrichment.Job, error)
 	GetJob(ctx context.Context, itemID string, jobID string) (enrichment.Job, error)
+	ProcessJob(ctx context.Context, jobID string) (enrichment.Job, error)
 	ApplyJob(ctx context.Context, itemID string, jobID string) (enrichment.ApplyResult, error)
 }
 
@@ -61,6 +62,9 @@ func (r enrichmentRoutes) create(c *gin.Context) {
 		writeEnrichmentServiceError(c, err)
 		return
 	}
+	go func() {
+		_, _ = r.service.ProcessJob(context.Background(), job.ID)
+	}()
 	c.JSON(http.StatusCreated, newEnrichmentJobResponse(job))
 }
 

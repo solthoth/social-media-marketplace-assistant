@@ -17,6 +17,7 @@ import {
   inventoryStatusLabels,
   inventoryStatusOptions
 } from '../../core/status-workflow';
+import { ItemAiAssistComponent } from './item-ai-assist.component';
 import { ItemPhotoManagerComponent } from './item-photo-manager.component';
 
 const currencies: Currency[] = ['USD'];
@@ -31,6 +32,7 @@ const currencies: Currency[] = ['USD'];
     MatSelectModule,
     NgFor,
     NgIf,
+    ItemAiAssistComponent,
     ItemPhotoManagerComponent,
     ReactiveFormsModule,
     RouterLink
@@ -214,6 +216,15 @@ const currencies: Currency[] = ['USD'];
       <smm-item-photo-manager
         *ngIf="itemId() as editableItemId"
         [itemId]="editableItemId"
+        (photosChanged)="setPhotoCount($event.length)"
+      />
+
+      <smm-item-ai-assist
+        *ngIf="itemId() as editableItemId"
+        [itemId]="editableItemId"
+        [title]="currentTitle()"
+        [photoCount]="photoCount()"
+        (itemApplied)="applyItemToForm($event)"
       />
     </section>
   `
@@ -231,6 +242,7 @@ export class ItemFormPageComponent implements OnInit {
   protected readonly itemId = signal<string | null>(null);
   protected readonly isEditMode = signal(false);
   protected readonly currencies = currencies;
+  protected readonly photoCount = signal(0);
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', Validators.required],
@@ -304,6 +316,18 @@ export class ItemFormPageComponent implements OnInit {
 
   protected statusOptions(): InventoryStatus[] {
     return inventoryStatusOptions(this.form.controls.status.value);
+  }
+
+  protected currentTitle(): string {
+    return this.form.controls.title.value;
+  }
+
+  protected setPhotoCount(count: number): void {
+    this.photoCount.set(count);
+  }
+
+  protected applyItemToForm(item: InventoryItem): void {
+    this.form.patchValue(this.formValue(item));
   }
 
   private loadItem(id: string): void {

@@ -67,12 +67,12 @@ This roadmap captures the first implementation work needed to move the app from 
 
 ## Phase 4: Seller Workflow
 
-12. Build AI-assisted item detail enrichment.
-    - Generate missing item details from item title and photos.
-    - Use OpenAI vision first behind a replaceable provider interface.
-    - Run enrichment asynchronously and keep job history.
-    - Fill empty fields only in the first implementation.
-    - Leave pricing suggestions for a future feature.
+12. ~~Build AI-assisted item detail enrichment.~~
+    - ~~Generate missing item details from item title and photos.~~
+    - ~~Use OpenAI vision first behind a replaceable provider interface.~~
+    - ~~Run enrichment asynchronously and keep job history.~~
+    - ~~Fill empty fields only in the first implementation.~~
+    - ~~Leave pricing suggestions for a future feature.~~
 
 13. Build a listing preparation view.
     - Review title, description, price, photos, and destination readiness before publishing.
