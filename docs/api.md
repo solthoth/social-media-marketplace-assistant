@@ -193,6 +193,75 @@ Deletes the photo metadata and stored photo bytes.
 
 Response: `204 No Content`.
 
+## Item Enrichment
+
+AI enrichment jobs generate missing item details from an item title and photos. The first implementation stores job history and applies completed suggestions only to empty item fields.
+
+### Create Enrichment Job
+
+`POST /items/{id}/enrichment-jobs`
+
+Creates a queued enrichment job for an item. The item must have a title and at least one photo.
+
+Response: `201 Created` with the enrichment job metadata.
+
+```json
+{
+  "id": "job-id",
+  "item_id": "item-id",
+  "status": "queued",
+  "provider": "fake",
+  "model": "fake-vision",
+  "requested_at": "2026-05-19T00:00:00Z",
+  "started_at": null,
+  "completed_at": null,
+  "applied_at": null,
+  "error_message": "",
+  "input_snapshot": {},
+  "suggestion": {
+    "description": "",
+    "category": "",
+    "size": "",
+    "condition": "",
+    "notes": ""
+  }
+}
+```
+
+### List Enrichment Jobs
+
+`GET /items/{id}/enrichment-jobs`
+
+Response body:
+
+```json
+{
+  "jobs": []
+}
+```
+
+### Get Enrichment Job
+
+`GET /items/{id}/enrichment-jobs/{jobId}`
+
+Response: `200 OK` with the enrichment job metadata.
+
+### Apply Enrichment Job
+
+`POST /items/{id}/enrichment-jobs/{jobId}/apply`
+
+Applies completed suggestions to empty item fields only. Existing item values are not overwritten.
+
+Response body:
+
+```json
+{
+  "item": {},
+  "job": {},
+  "applied_fields": ["description", "category"]
+}
+```
+
 ## Error Shape
 
 Errors use a consistent response shape:

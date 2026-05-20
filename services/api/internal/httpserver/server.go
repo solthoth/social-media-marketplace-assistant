@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/enrichment"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/items"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/photos"
 )
@@ -18,8 +19,9 @@ type healthResponse struct {
 const timeFormat = time.RFC3339
 
 type RouterDependencies struct {
-	ItemService  *items.Service
-	PhotoService *photos.Service
+	ItemService       *items.Service
+	PhotoService      *photos.Service
+	EnrichmentService *enrichment.Service
 }
 
 func NewRouter(dependencies ...RouterDependencies) http.Handler {
@@ -35,6 +37,9 @@ func NewRouter(dependencies ...RouterDependencies) http.Handler {
 	}
 	if len(dependencies) > 0 && dependencies[0].PhotoService != nil {
 		registerPhotoRoutes(router, dependencies[0].PhotoService)
+	}
+	if len(dependencies) > 0 && dependencies[0].EnrichmentService != nil {
+		registerEnrichmentRoutes(router, dependencies[0].EnrichmentService)
 	}
 
 	return router

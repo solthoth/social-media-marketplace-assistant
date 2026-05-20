@@ -10,7 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/ai"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/config"
+	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/enrichment"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/httpserver"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/items"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/photos"
@@ -35,10 +37,23 @@ func main() {
 	photoRepository := sqlite.NewPhotoRepository(db)
 	photoStorage := localphotos.NewStorage(cfg.PhotoStoragePath)
 	photoService := photos.NewService(itemRepository, photoRepository, photoStorage)
+	routerDependencies := httpserver.RouterDependencies{ItemService: &itemService, PhotoService: &photoService}
+	if cfg.AIEnrichmentEnabled {
+		enrichmentRepository := sqlite.NewEnrichmentRepository(db)
+		enrichmentProvider := ai.FakeProvider{}
+		enrichmentService := enrichment.NewService(
+			itemRepository,
+			photoRepository,
+			enrichmentRepository,
+			enrichmentProvider,
+			enrichment.ProviderConfig{Provider: cfg.AIProvider, Model: cfg.AIModel},
+		)
+		routerDependencies.EnrichmentService = &enrichmentService
+	}
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           httpserver.NewRouter(httpserver.RouterDependencies{ItemService: &itemService, PhotoService: &photoService}),
+		Handler:           httpserver.NewRouter(routerDependencies),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

@@ -254,6 +254,56 @@ func newOpenAPIDocument() openAPIDocument {
 					},
 				},
 			},
+			"/items/{id}/enrichment-jobs": {
+				"get": map[string]any{
+					"summary":     "List item enrichment jobs",
+					"operationId": "listItemEnrichmentJobs",
+					"parameters":  []map[string]any{pathIDParameter()},
+					"responses": map[string]any{
+						"200": responseRef("ListEnrichmentJobsResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+				"post": map[string]any{
+					"summary":     "Create an item enrichment job",
+					"operationId": "createItemEnrichmentJob",
+					"parameters":  []map[string]any{pathIDParameter()},
+					"responses": map[string]any{
+						"201": responseRef("EnrichmentJobResponse"),
+						"400": responseRef("ErrorResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
+			"/items/{id}/enrichment-jobs/{jobId}": {
+				"get": map[string]any{
+					"summary":     "Get an item enrichment job",
+					"operationId": "getItemEnrichmentJob",
+					"parameters": []map[string]any{
+						pathIDParameter(),
+						jobIDParameter(),
+					},
+					"responses": map[string]any{
+						"200": responseRef("EnrichmentJobResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
+			"/items/{id}/enrichment-jobs/{jobId}/apply": {
+				"post": map[string]any{
+					"summary":     "Apply an item enrichment job",
+					"operationId": "applyItemEnrichmentJob",
+					"parameters": []map[string]any{
+						pathIDParameter(),
+						jobIDParameter(),
+					},
+					"responses": map[string]any{
+						"200": responseRef("ApplyEnrichmentJobResponse"),
+						"400": responseRef("ErrorResponse"),
+						"404": responseRef("ErrorResponse"),
+					},
+				},
+			},
 		},
 		Components: openAPIComponents{
 			Schemas: map[string]any{
@@ -278,6 +328,10 @@ func newOpenAPIDocument() openAPIDocument {
 				"PhotoVariant": map[string]any{
 					"type": "string",
 					"enum": []string{"original", "medium", "thumbnail"},
+				},
+				"EnrichmentJobStatus": map[string]any{
+					"type": "string",
+					"enum": []string{"queued", "processing", "completed", "failed"},
 				},
 				"CreateItemRequest": itemRequestSchema(false),
 				"UpdateItemRequest": itemRequestSchema(true),
@@ -343,6 +397,53 @@ func newOpenAPIDocument() openAPIDocument {
 						},
 					},
 				},
+				"ItemDetailSuggestion": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"description": stringSchema(),
+						"category":    stringSchema(),
+						"size":        stringSchema(),
+						"condition":   stringSchema(),
+						"notes":       stringSchema(),
+					},
+				},
+				"EnrichmentJobResponse": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"id":             stringSchema(),
+						"item_id":        stringSchema(),
+						"status":         schemaRef("EnrichmentJobStatus"),
+						"provider":       stringSchema(),
+						"model":          stringSchema(),
+						"requested_at":   stringSchemaWithFormat("date-time"),
+						"started_at":     stringSchemaWithFormat("date-time"),
+						"completed_at":   stringSchemaWithFormat("date-time"),
+						"applied_at":     stringSchemaWithFormat("date-time"),
+						"error_message":  stringSchema(),
+						"input_snapshot": map[string]any{"type": "object"},
+						"suggestion":     schemaRef("ItemDetailSuggestion"),
+					},
+				},
+				"ListEnrichmentJobsResponse": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"jobs": map[string]any{
+							"type":  "array",
+							"items": schemaRef("EnrichmentJobResponse"),
+						},
+					},
+				},
+				"ApplyEnrichmentJobResponse": map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"item": schemaRef("ItemResponse"),
+						"job":  schemaRef("EnrichmentJobResponse"),
+						"applied_fields": map[string]any{
+							"type":  "array",
+							"items": stringSchema(),
+						},
+					},
+				},
 				"ErrorResponse": map[string]any{
 					"type": "object",
 					"properties": map[string]any{
@@ -395,6 +496,15 @@ func pathIDParameter() map[string]any {
 func photoIDParameter() map[string]any {
 	return map[string]any{
 		"name":     "photoId",
+		"in":       "path",
+		"required": true,
+		"schema":   stringSchema(),
+	}
+}
+
+func jobIDParameter() map[string]any {
+	return map[string]any{
+		"name":     "jobId",
 		"in":       "path",
 		"required": true,
 		"schema":   stringSchema(),

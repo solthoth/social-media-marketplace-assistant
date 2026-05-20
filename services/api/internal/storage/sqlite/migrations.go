@@ -95,6 +95,25 @@ alter table items add column selling_price_cents integer not null default 0;
 update items set selling_price_cents = price_cents where selling_price_cents = 0;
 `,
 	},
+	{
+		Version: 3,
+		SQL: `
+create table if not exists item_enrichment_jobs (
+  id text primary key,
+  item_id text not null references items(id) on delete cascade,
+  status text not null,
+  provider text not null,
+  model text not null default '',
+  requested_at text not null,
+  started_at text,
+  completed_at text,
+  applied_at text,
+  error_message text not null default '',
+  input_snapshot_json text not null,
+  suggestion_json text not null
+);
+`,
+	},
 }
 
 func ApplyMigrations(ctx context.Context, db *sql.DB) error {

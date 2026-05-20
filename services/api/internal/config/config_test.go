@@ -22,13 +22,21 @@ func (s *ConfigSuite) TestLoadUsesDefaults() {
 	s.Equal("8080", cfg.Port)
 	s.Equal("data/app.db", cfg.DatabasePath)
 	s.Equal("data/photos", cfg.PhotoStoragePath)
+	s.False(cfg.AIEnrichmentEnabled)
+	s.Equal("fake", cfg.AIProvider)
+	s.Equal("fake-vision", cfg.AIModel)
+	s.Empty(cfg.OpenAIAPIKey)
 }
 
 func (s *ConfigSuite) TestLoadUsesEnvironmentOverrides() {
 	values := map[string]string{
-		"PORT":               "9090",
-		"DATABASE_PATH":      "/tmp/marketplace.db",
-		"PHOTO_STORAGE_PATH": "/tmp/marketplace-photos",
+		"PORT":                  "9090",
+		"DATABASE_PATH":         "/tmp/marketplace.db",
+		"PHOTO_STORAGE_PATH":    "/tmp/marketplace-photos",
+		"AI_ENRICHMENT_ENABLED": "true",
+		"AI_PROVIDER":           "openai",
+		"AI_MODEL":              "gpt-4.1-mini",
+		"OPENAI_API_KEY":        "test-key",
 	}
 
 	cfg := Load(func(key string) string {
@@ -38,4 +46,8 @@ func (s *ConfigSuite) TestLoadUsesEnvironmentOverrides() {
 	s.Equal("9090", cfg.Port)
 	s.Equal("/tmp/marketplace.db", cfg.DatabasePath)
 	s.Equal("/tmp/marketplace-photos", cfg.PhotoStoragePath)
+	s.True(cfg.AIEnrichmentEnabled)
+	s.Equal("openai", cfg.AIProvider)
+	s.Equal("gpt-4.1-mini", cfg.AIModel)
+	s.Equal("test-key", cfg.OpenAIAPIKey)
 }
