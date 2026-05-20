@@ -28,7 +28,7 @@ AI-assisted pricing should be revisited as a separate feature after the first en
 4. The backend creates an enrichment job and processes it asynchronously.
 5. The AI provider analyzes the title and photo content.
 6. The backend stores the generated suggestion in job history.
-7. The frontend applies completed suggestions only to currently empty fields.
+7. The frontend polls the job, then applies completed suggestions only to currently empty fields.
 8. The seller reviews and edits the final item details before listing.
 
 ## Backend Design
@@ -156,6 +156,8 @@ The first implementation can use an in-process worker:
 - Frontend polls the job endpoint until the job completes or fails.
 
 The service boundary should not depend on in-process execution so a future queue-backed worker can replace it without changing the HTTP API.
+
+The current HTTP implementation starts processing in the background after job creation. The frontend treats that as asynchronous work and polls the job endpoint until it reaches a terminal state.
 
 ## Testing Strategy
 

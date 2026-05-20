@@ -244,6 +244,56 @@ describe('ApiClientService', () => {
 
     http.verify();
   });
+
+  it('creates an item enrichment job', () => {
+    const { client, http } = setup();
+
+    client.createItemEnrichmentJob('item-1').subscribe((job) => {
+      expect(job.id).toBe('job-1');
+      expect(job.status).toBe('queued');
+    });
+
+    const request = http.expectOne('/api/items/item-1/enrichment-jobs');
+    expect(request.request.method).toBe('POST');
+    request.flush(enrichmentJobFixture());
+
+    http.verify();
+  });
+
+  it('requests one item enrichment job', () => {
+    const { client, http } = setup();
+
+    client.getItemEnrichmentJob('item-1', 'job-1').subscribe((job) => {
+      expect(job.suggestion.category).toBe('Clothing');
+    });
+
+    const request = http.expectOne('/api/items/item-1/enrichment-jobs/job-1');
+    expect(request.request.method).toBe('GET');
+    request.flush(enrichmentJobFixture({ status: 'completed' }));
+
+    http.verify();
+  });
+
+  it('applies an item enrichment job', () => {
+    const { client, http } = setup();
+
+    client.applyItemEnrichmentJob('item-1', 'job-1').subscribe((response) => {
+      expect(response.item.description).toBe('AI description');
+      expect(response.applied_fields).toEqual(['description']);
+    });
+
+    const request = http.expectOne(
+      '/api/items/item-1/enrichment-jobs/job-1/apply'
+    );
+    expect(request.request.method).toBe('POST');
+    request.flush({
+      item: itemFixture({ description: 'AI description' }),
+      job: enrichmentJobFixture({ status: 'completed' }),
+      applied_fields: ['description']
+    });
+
+    http.verify();
+  });
 });
 
 function itemFixture(overrides: Record<string, unknown> = {}) {
@@ -279,6 +329,39 @@ function photoFixture(overrides: Record<string, unknown> = {}) {
       thumbnail: '/items/item-1/photos/photo-1/content?variant=thumbnail'
     },
     created_at: '2026-05-18T00:00:00Z',
+    ...overrides
+  };
+}
+
+function enrichmentJobFixture(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'job-1',
+    item_id: 'item-1',
+    status: 'queued',
+    provider: 'fake',
+    model: 'fake-vision',
+    requested_at: '2026-05-18T00:00:00Z',
+    started_at: null,
+    completed_at: null,
+    applied_at: null,
+    error_message: '',
+    input_snapshot: {
+      item_id: 'item-1',
+      title: 'Denim jacket',
+      existing_description: '',
+      existing_category: '',
+      existing_size: '',
+      existing_condition: '',
+      existing_notes: '',
+      photos: []
+    },
+    suggestion: {
+      description: 'AI description',
+      category: 'Clothing',
+      size: 'M',
+      condition: 'Good',
+      notes: 'Review generated details.'
+    },
     ...overrides
   };
 }

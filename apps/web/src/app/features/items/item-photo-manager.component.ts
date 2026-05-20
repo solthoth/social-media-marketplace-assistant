@@ -1,5 +1,13 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  input,
+  OnInit,
+  Output,
+  signal
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ApiClientService, ItemPhoto } from '../../core/api-client.service';
@@ -118,6 +126,7 @@ import { ApiClientService, ItemPhoto } from '../../core/api-client.service';
 })
 export class ItemPhotoManagerComponent implements OnInit {
   readonly itemId = input.required<string>();
+  @Output() readonly photosChanged = new EventEmitter<ItemPhoto[]>();
 
   private readonly api = inject(ApiClientService);
 
@@ -216,10 +225,12 @@ export class ItemPhotoManagerComponent implements OnInit {
     this.api.listItemPhotos(this.itemId()).subscribe({
       next: (response) => {
         this.photos.set(response.photos);
+        this.photosChanged.emit(response.photos);
         this.isLoading.set(false);
       },
       error: () => {
         this.photos.set([]);
+        this.photosChanged.emit([]);
         this.isLoading.set(false);
         this.loadError.set(true);
       }

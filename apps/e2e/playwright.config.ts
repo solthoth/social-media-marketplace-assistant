@@ -19,7 +19,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: `DATABASE_PATH=${databasePath} PORT=8080 go run ./services/api/cmd/api`,
+      command: `DATABASE_PATH=${databasePath} PORT=8080 AI_ENRICHMENT_ENABLED=true AI_PROVIDER=fake go run ./services/api/cmd/api`,
       cwd: '../..',
       url: `${apiUrl}/healthz`,
       reuseExistingServer: false,

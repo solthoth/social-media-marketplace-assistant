@@ -280,14 +280,16 @@ nav a {
   padding-top: 8px;
 }
 
-.photo-manager-header {
+.photo-manager-header,
+.ai-assist-header {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: end;
 }
 
-.photo-manager h2 {
+.photo-manager h2,
+.ai-assist h2 {
   margin: 0;
   color: #172026;
   font-size: 1.4rem;
@@ -362,6 +364,44 @@ nav a {
 
 .danger-action {
   color: #8a2d21;
+}
+
+.ai-assist {
+  display: grid;
+  gap: 16px;
+}
+
+.notice.success {
+  border-color: #9bc7b0;
+  color: #245c42;
+  background: #f2fbf6;
+}
+
+.suggestion-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.suggestion-list div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid #d7dee2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.suggestion-list dt {
+  color: #687782;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.suggestion-list dd {
+  margin: 0;
+  color: #172026;
+  line-height: 1.4;
 }
 
 .eyebrow {
@@ -448,7 +488,8 @@ strong {
     flex-direction: column;
   }
 
-  .photo-manager-header {
+  .photo-manager-header,
+  .ai-assist-header {
     align-items: stretch;
     flex-direction: column;
   }

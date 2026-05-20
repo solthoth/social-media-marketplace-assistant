@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/domain"
 	"github.com/solthoth/social-media-marketplace-assistant/services/api/internal/enrichment"
@@ -66,9 +67,10 @@ func (s *EnrichmentHandlerSuite) TestCreateListGetAndApplyEnrichmentJob() {
 	s.NotEmpty(created.ID)
 	s.Equal("queued", created.Status)
 
-	processed, err := s.enrichService.ProcessJob(context.Background(), created.ID)
-	s.Require().NoError(err)
-	s.Equal(enrichment.JobStatusCompleted, processed.Status)
+	s.Eventually(func() bool {
+		processed, err := s.enrichService.GetJob(context.Background(), item.ID, created.ID)
+		return err == nil && processed.Status == enrichment.JobStatusCompleted
+	}, time.Second, 10*time.Millisecond)
 
 	list := s.request(http.MethodGet, "/items/"+item.ID+"/enrichment-jobs", nil)
 	s.Equal(http.StatusOK, list.Code)
