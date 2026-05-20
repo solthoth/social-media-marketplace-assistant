@@ -132,7 +132,7 @@ Example response:
 
 ## OpenAI Provider
 
-The OpenAI adapter should use the Responses API with image inputs. The backend should provide image inputs as base64 data URLs because local item photos are private and not publicly reachable.
+The OpenAI adapter uses the Responses API with image inputs. The backend provides image inputs as base64 data URLs because local item photos are private and not publicly reachable.
 
 Use structured output from the provider where practical so the service can validate and persist predictable suggestion fields. The prompt should instruct the model to leave uncertain fields empty rather than guessing, especially for size and condition.
 

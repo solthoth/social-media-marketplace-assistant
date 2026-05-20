@@ -2,6 +2,7 @@ package enrichment
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"strings"
 	"time"
@@ -46,6 +47,10 @@ type ItemDetailProvider interface {
 	GenerateItemDetails(ctx context.Context, input ItemDetailInput) (ItemDetailSuggestion, error)
 }
 
+type PhotoContentStorage interface {
+	OpenPhotoContent(ctx context.Context, photo domain.ItemPhoto) ([]byte, error)
+}
+
 type ProviderConfig struct {
 	Provider string
 	Model    string
@@ -56,6 +61,7 @@ type Service struct {
 	photos   PhotoRepository
 	jobs     JobRepository
 	provider ItemDetailProvider
+	storage  PhotoContentStorage
 	config   ProviderConfig
 }
 
@@ -67,6 +73,12 @@ func NewService(items ItemRepository, photos PhotoRepository, jobs JobRepository
 		provider: provider,
 		config:   config,
 	}
+}
+
+func NewServiceWithPhotoContent(items ItemRepository, photos PhotoRepository, jobs JobRepository, provider ItemDetailProvider, storage PhotoContentStorage, config ProviderConfig) Service {
+	service := NewService(items, photos, jobs, provider, config)
+	service.storage = storage
+	return service
 }
 
 type Job struct {
@@ -99,6 +111,7 @@ type ItemPhotoInput struct {
 	ID       string `json:"id"`
 	Filename string `json:"filename"`
 	MimeType string `json:"mime_type"`
+	DataURL  string `json:"-"`
 }
 
 type ItemDetailSuggestion struct {
@@ -225,11 +238,19 @@ func (s Service) itemDetailInput(ctx context.Context, itemID string) (ItemDetail
 	}
 	photoInputs := make([]ItemPhotoInput, 0, len(itemPhotos))
 	for _, photo := range itemPhotos {
-		photoInputs = append(photoInputs, ItemPhotoInput{
+		input := ItemPhotoInput{
 			ID:       photo.ID,
 			Filename: photo.Filename,
 			MimeType: photo.MimeType,
-		})
+		}
+		if s.storage != nil {
+			content, err := s.storage.OpenPhotoContent(ctx, photo)
+			if err != nil {
+				return ItemDetailInput{}, err
+			}
+			input.DataURL = photoDataURL(photo.MimeType, content)
+		}
+		photoInputs = append(photoInputs, input)
 	}
 	return ItemDetailInput{
 		ItemID:              item.ID,
@@ -241,6 +262,13 @@ func (s Service) itemDetailInput(ctx context.Context, itemID string) (ItemDetail
 		ExistingNotes:       item.Notes,
 		Photos:              photoInputs,
 	}, nil
+}
+
+func photoDataURL(mimeType string, content []byte) string {
+	if strings.TrimSpace(mimeType) == "" || len(content) == 0 {
+		return ""
+	}
+	return "data:" + mimeType + ";base64," + base64.StdEncoding.EncodeToString(content)
 }
 
 func applySuggestionToEmptyFields(item *domain.Item, suggestion ItemDetailSuggestion) []string {

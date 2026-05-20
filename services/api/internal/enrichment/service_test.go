@@ -95,6 +95,21 @@ func (s *ServiceSuite) TestProcessJobCompletesWithProviderSuggestion() {
 	s.Len(s.provider.lastInput.Photos, 1)
 }
 
+func (s *ServiceSuite) TestCreateJobAddsPhotoDataURLsWhenStorageIsConfigured() {
+	storage := &memoryPhotoStorage{content: map[string][]byte{
+		"items/item-1/photos/photo-1": pngBytes,
+	}}
+	s.service = NewServiceWithPhotoContent(s.items, s.photos, s.jobs, s.provider, storage, ProviderConfig{
+		Provider: "fake",
+		Model:    "fake-vision",
+	})
+
+	job, err := s.service.CreateJob(context.Background(), s.existingID)
+
+	s.Require().NoError(err)
+	s.Equal("data:image/png;base64,iVBORw0KGgo=", job.InputSnapshot.Photos[0].DataURL)
+}
+
 func (s *ServiceSuite) TestProcessJobStoresFailedStateWhenProviderFails() {
 	s.provider.err = errors.New("provider unavailable")
 	job, err := s.service.CreateJob(context.Background(), s.existingID)
@@ -169,6 +184,16 @@ func newMemoryPhotoRepository() *memoryPhotoRepository {
 func (r *memoryPhotoRepository) ListPhotos(ctx context.Context, itemID string) ([]domain.ItemPhoto, error) {
 	return r.photos[itemID], nil
 }
+
+type memoryPhotoStorage struct {
+	content map[string][]byte
+}
+
+func (s *memoryPhotoStorage) OpenPhotoContent(ctx context.Context, photo domain.ItemPhoto) ([]byte, error) {
+	return s.content[photo.StorageID], nil
+}
+
+var pngBytes = []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a}
 
 type memoryJobRepository struct {
 	jobs map[string]Job
